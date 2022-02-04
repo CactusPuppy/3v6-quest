@@ -1,0 +1,17 @@
+playervar Number[] powerupInventory;
+playervar Number credits;
+
+enum PowerupType {
+  __START,
+  HEALTH,
+  IMMORTALITY,
+  SELF_RES,
+  DAMAGE_BOOST,
+  SPEED_BOOST,
+  INVISIBILITY,
+  SHRINKING,
+  ENLARGENING,
+  COOLDOWN_HASTE,
+  BLINDNESS,
+  __END
+}
