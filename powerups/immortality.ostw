@@ -1,0 +1,55 @@
+import "../main.ostw";
+
+globalvar Number immortalityDuration = WorkshopSettingInteger("Immortality", "Duration", 6, 2, 15, 0);
+
+playervar Number immortalityTimer;
+playervar Number immortalityProgressBar;
+playervar Any[] immortalityEffects = [];
+
+void useImmortality() "[SUB] Immortality potion effects"
+{
+  SetStatus(EventPlayer(), null, Status.Unkillable, immortalityDuration);
+  immortalityTimer = immortalityDuration;
+  ChaseVariableOverTime(immortalityTimer, 0, immortalityDuration, TimeChaseReevaluation.None);
+  CreateEffect(
+    VisibleTo:      AllPlayers(),
+    Type:           Effect.BaptisteImmortalityFieldProtectedEffect,
+    Color:          <Color>TeamOf(EventPlayer()),
+    Position:       EventPlayer(),
+    Reevaluation:   EffectRev.VisibleTo
+  );
+  ModifyVariable(immortalityEffects, Operation.AppendToArray, LastCreatedEntity());
+  CreateEffect(
+    VisibleTo:      AllPlayers(),
+    Type:           Effect.BaptisteImmortalityFieldProtectedSound,
+    Color:          <Color>TeamOf(EventPlayer()),
+    Position:       EventPlayer(),
+    Radius:         200,
+    Reevaluation:   EffectRev.VisibleTo
+  );
+  ModifyVariable(immortalityEffects, Operation.AppendToArray, LastCreatedEntity());
+  CreateProgressBarHudText(
+    VisibleTo:          immortalityTimer > 0 ? EventPlayer() : null,
+    Value:              immortalityTimer * 100 / immortalityDuration,
+    Text:               <"<0>", powerupNames[PowerupType.IMMORTALITY]>,
+    Location.Top, 10,
+    ProgressBarColor:   Color.Aqua,
+    TextColor:          Color.White,
+    ProgressBarHudEvaluation.Values
+  );
+  immortalityProgressBar = LastTextID();
+}
+
+rule: "When immortality timer runs out, remove immortality"
+Event.OngoingPlayer
+if (immortalityTimer > 0)
+{
+  WaitUntil(immortalityTimer == 0, immortalityDuration);
+  immortalityTimer = 0;
+  StopChasingVariable(immortalityTimer);
+  while (CountOf(immortalityEffects) > 0) {
+    DestroyEffect(FirstOf(immortalityEffects));
+    ModifyVariable(immortalityEffects, Operation.RemoveFromArrayByIndex, 0);
+  }
+  DestroyProgressBarHudText(immortalityProgressBar);
+}

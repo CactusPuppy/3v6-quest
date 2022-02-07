@@ -1,9 +1,14 @@
-playervar Number[] powerupInventory;
-playervar Number credits;
+import "customGameSettings.lobby";
+
+globalvar Team PowerupTeam = [Team.Team1, Team.Team2][WorkshopSettingCombo("Settings", "Powerups Team", 0, ["Team 1", "Team 2"], 0)];
+
+playervar Number[] powerupInventory = [];
+playervar Number powerupIndex = <Number>PowerupType.IMMORTALITY;
+playervar Boolean canActivatePowerupFlag = false;
+playervar Number credits; // TODO: Implement costs and purchasing
 
 enum PowerupType {
-  __START,
-  HEALTH,
+  FULL_HEALTH,
   IMMORTALITY,
   SELF_RES,
   DAMAGE_BOOST,
@@ -13,5 +18,66 @@ enum PowerupType {
   ENLARGENING,
   COOLDOWN_HASTE,
   BLINDNESS,
+  INSTA_ULT,
   __END
 }
+
+globalvar String[] powerupNames = [
+  "Full Health Potion",
+  "Immortality Potion",
+  "Self-Resurrect Totem"
+];
+
+rule: 'Interact to use Powerup'
+Event.OngoingPlayer
+if (TeamOf(EventPlayer()) == PowerupTeam)
+if (IsButtonHeld(Button: Button.Interact))
+{
+  CheckUse();
+  if (!canActivatePowerupFlag) {
+    SmallMessage(EventPlayer(), <"<0> can't be used right now!", powerupNames[powerupIndex]>);
+    PlayEffect(EventPlayer(), PlayEffect.DebuffImpactSound, null, EventPlayer(), 50);
+    return;
+  }
+  UseCurrentPower();
+}
+
+void CheckUse() "[SUB] Can player use the currently selected powerup?"
+{
+  # Cannot use by default
+  canActivatePowerupFlag = false;
+  // TODO: Check quantity of current powerup as a sanity check!
+  switch(powerupIndex) {
+    case PowerupType.FULL_HEALTH:
+      canActivatePowerupFlag = HasSpawned(EventPlayer()) && IsAlive(EventPlayer()) && Health(EventPlayer()) < MaxHealth(EventPlayer());
+      break;
+    case PowerupType.IMMORTALITY:
+      canActivatePowerupFlag = HasSpawned(EventPlayer()) && IsAlive(EventPlayer()) && immortalityTimer == 0;
+      break;
+    case PowerupType.SELF_RES:
+      canActivatePowerupFlag = IsDead(EventPlayer());
+      break;
+  }
+}
+
+void UseCurrentPower() "[SUB] Dispatcher for powerup use event"
+{
+  switch(powerupIndex) {
+    case PowerupType.FULL_HEALTH:
+      async useFullRestore();
+      break;
+    case PowerupType.IMMORTALITY:
+      useImmortality();
+      break;
+  }
+  # Decrement inventory of powerups
+  powerupInventory[powerupIndex] -= 1;
+}
+
+import "powerups/fullRestore.ostw";
+import "powerups/immortality.ostw";
+
+// TODO: Automatically choose a new powerup when the current one is exhausted
+// TODO: Create powerup selection interface
+
+import "debug.ostw";

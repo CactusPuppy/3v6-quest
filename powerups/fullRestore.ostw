@@ -1,0 +1,27 @@
+import "../main.ostw";
+playervar Any visualEffect;
+void useFullRestore() "[SUB] Full Health effects"
+{
+  if (EntityExists(visualEffect)) {
+    DestroyEffect(visualEffect);
+  }
+  SetPlayerHealth(EventPlayer(), MaxHealth(EventPlayer()));
+  PlayEffect(
+    VisibleTo:        EventPlayer(),
+    Type:             PlayEffect.AnaBioticGrenadeIncreasedHealingSound,
+    Color:            <Color>TeamOf(EventPlayer()),
+    Position:         EventPlayer(),
+    Radius:           200
+  );
+  CreateEffect(
+    VisibleTo:        EventPlayer(),
+    Type:             Effect.AnaBioticGrenadeIncreasedHealingEffect,
+    Color:            Color.White,
+    Position:         EventPlayer(),
+    Radius:           0,
+    Reevaluation:     EffectRev.VisibleTo
+  );
+  visualEffect = LastCreatedEntity();
+  Wait(3.5);
+  DestroyEffect(visualEffect);
+}
