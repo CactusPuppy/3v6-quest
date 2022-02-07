@@ -1,0 +1,24 @@
+{
+  "Extensions": {
+    "Buff and Debuff Sounds": true,
+    "Buff Status Effects": true
+  },
+  "Description": "===|[ SVB's MMO Ladder Challenge ]|===\nby @Cactus_Puppy\nworkshop.codes/discord",
+  "Lobby": {
+    "Max Team 1 Players": 3
+  },
+  "Modes": {
+    "Assault": {
+      "Competitive Rules": true
+    },
+    "Escort": {
+      "Competitive Rules": true
+    },
+    "Hybrid": {
+      "Competitive Rules": true
+    },
+    "Control": {
+      "Competitive Rules": true
+    }
+  }
+}
