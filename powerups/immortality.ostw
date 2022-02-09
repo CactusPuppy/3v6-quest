@@ -8,9 +8,13 @@ playervar Any[] immortalityEffects = [];
 
 void useImmortality() "[SUB] Immortality potion effects"
 {
+  while (CountOf(immortalityEffects) > 0) {
+    DestroyEffect(FirstOf(immortalityEffects));
+    ModifyVariable(immortalityEffects, Operation.RemoveFromArrayByIndex, 0);
+  }
   SetStatus(EventPlayer(), null, Status.Unkillable, immortalityDuration);
   immortalityTimer = immortalityDuration;
-  ChaseVariableOverTime(immortalityTimer, 0, immortalityDuration, TimeChaseReevaluation.None);
+  ChaseVariableAtRate(immortalityTimer, 0, 1, RateChaseReevaluation.None);
   CreateEffect(
     VisibleTo:      AllPlayers(),
     Type:           Effect.BaptisteImmortalityFieldProtectedEffect,
@@ -35,18 +39,21 @@ void useImmortality() "[SUB] Immortality potion effects"
     Location.Top, 10,
     ProgressBarColor:   Color.Aqua,
     TextColor:          Color.White,
-    ProgressBarHudEvaluation.Values
+    ProgressBarHudEvaluation.VisibleToAndValues
   );
   immortalityProgressBar = LastTextID();
 }
 
-rule: "When immortality timer runs out, remove immortality"
+rule: "[IMMORTALITY] When immortality timer runs out, remove immortality"
 Event.OngoingPlayer
 if (immortalityTimer > 0)
 {
   WaitUntil(immortalityTimer == 0, immortalityDuration);
+
   immortalityTimer = 0;
   StopChasingVariable(immortalityTimer);
+
+  ClearStatus(EventPlayer(), Status.Unkillable);
   while (CountOf(immortalityEffects) > 0) {
     DestroyEffect(FirstOf(immortalityEffects));
     ModifyVariable(immortalityEffects, Operation.RemoveFromArrayByIndex, 0);
