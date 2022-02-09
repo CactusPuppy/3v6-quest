@@ -19,6 +19,7 @@ playervar Number powerupIndex;
 playervar Boolean canActivatePowerupFlag = false;
 playervar String lastPowerupName;
 playervar Boolean inventoryIsEmpty; // Caches inventory status
+playervar Any transformEffect;
 playervar Number credits; // TODO: Implement costs and purchasing
 
 enum PowerupType {

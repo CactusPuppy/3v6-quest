@@ -1,25 +1,30 @@
 import "../main.ostw";
 
 globalvar Number shrinkDuration = WorkshopSettingInteger("Shrinking Tablet", "Shrink Duration", 15, 1, 60, 0);
-globalvar Number shrunkScale = WorkshopSettingReal("Shrinking Tablet", "Shrunken Scale", 0.25, 0.25, 1, 1);
-globalvar Number shrunkVoicelinePitch = WorkshopSettingReal("Shrinking Tablet", "Shrunken Voice Pitch", 1.5, 1, 1.5);
+globalvar Number shrunkScaleTarget = WorkshopSettingReal("Shrinking Tablet", "Shrunken Scale", 0.1, 0.25, 1, 1);
+globalvar Number shrunkVoicelinePitchTarget = WorkshopSettingReal("Shrinking Tablet", "Shrunken Voice Pitch", 1.5, 1, 1.5);
 
 playervar Number shrinkTimer;
-playervar Number shrinkScale;
-playervar Number shrinkPitch;
+playervar Number shrinkScale = 1;
+playervar Number shrinkPitch = 1;
 
 void useShrink() "[SUB] Shrinking Tablet effects"
 {
   StartScalingPlayer(EventPlayer(), shrinkScale, true);
   StartModifyingHeroVoiceLines(EventPlayer(), shrinkPitch, true);
-  ChaseVariableOverTime(shrinkScale, shrunkScale, 0.3, TimeChaseReevaluation.None);
-  ChaseVariableOverTime(shrinkPitch, shrunkVoicelinePitch, 0.3, TimeChaseReevaluation.None);
+
+  ChaseVariableOverTime(shrinkScale, shrunkScaleTarget, 0.5, TimeChaseReevaluation.None);
+  ChaseVariableOverTime(shrinkPitch, shrunkVoicelinePitchTarget, 0.5, TimeChaseReevaluation.None);
+
   PlayEffect(AllPlayers(), PlayEffect.MoiraFadeDisappearEffect, <Color>TeamOf(EventPlayer()), EventPlayer(), 1.2);
   PlayEffect(AllPlayers(), PlayEffect.MoiraFadeDisappearSound, null, EventPlayer(), 200);
-  Wait(0.3);
-
   shrinkTimer = shrinkDuration;
+  transformEffect = CreateEffect(AllPlayers(), Effect.EchoCloningEffect, <Color>TeamOf(EventPlayer()), EventPlayer(), 1, EffectRev.VisibleTo);
+
+  Wait(0.5);
+
   ChaseVariableAtRate(shrinkTimer, 0, 1, RateChaseReevaluation.None);
+  DestroyEffect(transformEffect);
 }
 
 rule: "[SHRINKING] If player dies, cancel shrunken state"
@@ -33,15 +38,18 @@ rule: "[SHRINKING] On timer completion, revert shrunken state"
 Event.OngoingPlayer
 if (shrinkTimer > 0)
 {
-  WaitUntil(shrinkTimer == 0, shrinkDuration);
+  WaitUntil(shrinkTimer == 0, 1000000);
 
   StopChasingVariable(shrinkTimer);
-  ChaseVariableOverTime(shrinkScale, 1, 0.3, TimeChaseReevaluation.None);
-  ChaseVariableOverTime(shrinkPitch, 1, 0.3, TimeChaseReevaluation.None);
+  ChaseVariableOverTime(shrinkScale, 1, 0.5, TimeChaseReevaluation.None);
+  ChaseVariableOverTime(shrinkPitch, 1, 0.5, TimeChaseReevaluation.None);
   PlayEffect(AllPlayers(), PlayEffect.MoiraFadeReappearEffect, <Color>TeamOf(EventPlayer()), EventPlayer(), 1.2);
   PlayEffect(AllPlayers(), PlayEffect.MoiraFadeReappearSound, null, EventPlayer(), 200);
-  Wait(0.3);
+  transformEffect = CreateEffect(AllPlayers(), Effect.EchoCloningEffect, <Color>TeamOf(EventPlayer()), EventPlayer(), 1, EffectRev.VisibleTo);
 
+  Wait(0.5 - 0.016);
+
+  DestroyEffect(transformEffect);
   StopScalingPlayer(EventPlayer());
   StopModifyingHeroVoiceLines(EventPlayer());
 }
