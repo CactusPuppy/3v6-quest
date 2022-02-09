@@ -1,11 +1,14 @@
 {
   "Extensions": {
-    "Buff and Debuff Sounds": true,
-    "Buff Status Effects": true
-  },
-  "Description": "===|[ SVB's MMO Ladder Challenge ]|===\nby @Cactus_Puppy\nworkshop.codes/discord",
+    "Buff and Debuff Sounds": true,         // 2 points
+    "Buff Status Effects": true,            // 2 points
+    "Energy Explosion Effects": true,       // 4 points
+    "Explosion Sounds": true                // 2 points
+  },                                        // TOTAL: 10 points
+  "Mode Name": "SVB's Ladd­er MMO Challenge",
+  "Description": "3 Powered-Up Content Creators vs. 6 Ladd­er players. Who will win?",
   "Lobby": {
-    "Max Team 1 Players": 3
+    "Max Team 1 Players": 3 // 3 Player Slots removed = 12 points
   },
   "Modes": {
     "Assault": {
