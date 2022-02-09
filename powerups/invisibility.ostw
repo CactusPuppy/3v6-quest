@@ -3,7 +3,7 @@ import "../main.ostw";
 globalvar Number invisibilityDuration = WorkshopSettingInteger("Invisibility Dust", "Invisibility Duration", 10, 1, 60, 0);
 
 playervar Number invisibilityTimer;
-playervar Any[] invisibilityEffects;
+playervar Any[] invisibilityEffects = [];
 playervar Number invisibilityProgressBar;
 
 void useInvisibility() "[SUB] Use invisibility dust" {
