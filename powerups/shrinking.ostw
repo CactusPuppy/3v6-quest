@@ -34,6 +34,12 @@ if (shrinkTimer > 0)
   shrinkTimer = 0;
 }
 
+rule: "[SHRINKING] Reset between rounds"
+if (IsBetweenRounds())
+{
+  AllPlayers().shrinkTimer = 0;
+}
+
 rule: "[SHRINKING] On timer completion, revert shrunken state"
 Event.OngoingPlayer
 if (shrinkTimer > 0)
