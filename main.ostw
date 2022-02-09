@@ -207,7 +207,7 @@ void incrementPowerupIndex() "[SUB] Find next valid powerupIndex in the positive
   explorePowerupIndex = powerupIndex + 1;
   while (powerupInventory[explorePowerupIndex] == 0 && explorePowerupIndex != powerupIndex) {
     explorePowerupIndex += 1;
-    if (explorePowerupIndex >= powerupNames[powerupIndex]) {
+    if (explorePowerupIndex >= CountOf(powerupNames)) {
       explorePowerupIndex = 0;
     }
   }
