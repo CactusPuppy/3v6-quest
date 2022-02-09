@@ -1,10 +1,24 @@
 import "customGameSettings.lobby";
 
-globalvar Team PowerupTeam = [Team.Team1, Team.Team2][WorkshopSettingCombo("Settings", "Powerups Team", 0, ["Team 1", "Team 2"], 0)];
+globalvar Team PowerupTeam;
 
-playervar Number[] powerupInventory = [];
-playervar Number powerupIndex = <Number>PowerupType.IMMORTALITY;
+playervar Number[] powerupInventory = [
+  2,                  // FULL_HEALTH
+  2,                  // IMMORTALITY
+  2,                  // SELF_RES
+  2,                  // DAMAGE_BOOST,
+  2,                  // SPEED_BOOST,
+  2,                  // INVISIBILITY,
+  2,                  // SHRINKING,
+  2,                  // ENLARGENING,
+  2,                  // COOLDOWN_HASTE,
+  2,                  // BLINDNESS,
+  2                   // INSTA_ULT,
+];
+playervar Number powerupIndex;
 playervar Boolean canActivatePowerupFlag = false;
+playervar String lastPowerupName;
+playervar Boolean inventoryIsEmpty; // Caches inventory status
 playervar Number credits; // TODO: Implement costs and purchasing
 
 enum PowerupType {
@@ -18,15 +32,27 @@ enum PowerupType {
   ENLARGENING,
   COOLDOWN_HASTE,
   BLINDNESS,
-  INSTA_ULT,
-  __END
+  INSTA_ULT
 }
 
 globalvar String[] powerupNames = [
-  "Full Health Potion",
-  "Immortality Potion",
-  "Self-Resurrect Totem"
+  "Full Health Potion",                 // FULL_HEALTH
+  "Immortality Potion",                 // IMMORTALITY
+  "Self-Resurrect Totem",               // SELF_RES
+  "Damage Boost Stim",                  // DAMAGE_BOOST,
+  "Speed Boost Stim",                   // SPEED_BOOST,
+  "Invisibility Dust",                  // INVISIBILITY,
+  "Shrinking Tablet",                   // SHRINKING,
+  "Giant Juice",                        // ENLARGENING,
+  "Cooldown Hastener",                  // COOLDOWN_HASTE,
+  "Smoke Bomb",                         // BLINDNESS,
+  "Insta-Ult Pack"                      // INSTA_ULT,
 ];
+
+rule: "Set Powerup Team - not in global initialization rule to ensure ordering" -1
+{
+  PowerupTeam = [Team.Team1, Team.Team2][WorkshopSettingCombo("Settings", "Powerups Team", 0, ["Team 1", "Team 2"], 0)];
+}
 
 rule: 'Interact to use Powerup'
 Event.OngoingPlayer
@@ -72,6 +98,96 @@ void UseCurrentPower() "[SUB] Dispatcher for powerup use event"
   }
   # Decrement inventory of powerups
   powerupInventory[powerupIndex] -= 1;
+  # Confirm use (cache name to avoid deferment issues)
+  lastPowerupName = powerupNames[powerupIndex];
+  SmallMessage(EventPlayer(), <"Used <0>", lastPowerupName>);
+  # Select next available option if out now
+  if (powerupInventory[powerupIndex] == 0) {
+    incrementPowerupIndex();
+    # If we're still at 0, there's nothing left in the inventory.
+    if (powerupInventory[powerupIndex] == 0) {
+      inventoryIsEmpty = true;
+    }
+  }
+}
+
+rule: "Initialize player HUD"
+Event.OnPlayerJoin
+if (TeamOf(EventPlayer()) == PowerupTeam)
+{
+  CreateHudText(
+    VisibleTo:          EventPlayer(),
+    Header:             inventoryIsEmpty
+                        ? "   No Items   "
+                        : <"   [<1> + <2>] <4>       <0> [<6>]       <5> [<1> + <3>]   ",
+                            powerupNames[powerupIndex],
+                            InputBindingString(Button.Reload),
+                            InputBindingString(Button.PrimaryFire),
+                            InputBindingString(Button.SecondaryFire),
+                            IconString(Icon.ArrowLeft),
+                            IconString(Icon.ArrowRight),
+                            powerupInventory[powerupIndex]
+                        >,
+    Subheader:          " ",
+    Text:               " ",
+    Location.Top,
+    SortOrder:          3,
+    Reevaluation:       HudTextRev.VisibleToAndString,
+    Spectators:         Spectators.DefaultVisibility
+  );
+}
+
+rule: "Scroll forward and back between usable items"
+Event.OngoingPlayer
+if (TeamOf(EventPlayer()) == PowerupTeam)
+if (IsButtonHeld(Button: Button.Reload))
+if (IsButtonHeld(Button: Button.PrimaryFire) || IsButtonHeld(Button: Button.SecondaryFire))
+{
+  AbortIf(CountOf(FilteredArray(powerupInventory, ArrayElement() > 0)) < 2);
+  if (IsButtonHeld(Button: Button.PrimaryFire)) {
+    decrementPowerupIndex();
+  } else if (IsButtonHeld(Button: Button.SecondaryFire)) {
+    incrementPowerupIndex();
+  }
+}
+
+rule: "Disable selection buttons"
+Event.OngoingPlayer
+if (IsButtonHeld(Button: Button.Reload))
+{
+  DisallowButton(Button: Button.PrimaryFire);
+  DisallowButton(Button: Button.SecondaryFire);
+  WaitUntil(
+    ContinueCondition:          !IsButtonHeld(Button: Button.Reload),
+    Timeout:                    9999
+  );
+  AllowButton(Button: Button.PrimaryFire);
+  AllowButton(Button: Button.SecondaryFire);
+}
+
+playervar Number explorePowerupIndex;
+
+void decrementPowerupIndex() "[SUB] Find next valid powerupIndex in the negative direction"
+{
+  explorePowerupIndex = powerupIndex - 1;
+  while (powerupInventory[explorePowerupIndex] == 0 && explorePowerupIndex != powerupIndex) {
+    explorePowerupIndex -= 1;
+    if (explorePowerupIndex < 0) {
+      explorePowerupIndex = CountOf(powerupNames) - 1;
+    }
+  }
+  powerupIndex = explorePowerupIndex;
+}
+
+void incrementPowerupIndex() "[SUB] Find next valid powerupIndex in the positive direction" {
+  explorePowerupIndex = powerupIndex + 1;
+  while (powerupInventory[explorePowerupIndex] == 0 && explorePowerupIndex != powerupIndex) {
+    explorePowerupIndex += 1;
+    if (explorePowerupIndex >= powerupNames[powerupIndex]) {
+      explorePowerupIndex = 0;
+    }
+  }
+  powerupIndex = explorePowerupIndex;
 }
 
 import "powerups/fullRestore.ostw";
