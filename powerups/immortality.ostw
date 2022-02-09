@@ -1,6 +1,6 @@
 import "../main.ostw";
 
-globalvar Number immortalityDuration = WorkshopSettingInteger("Immortality", "Duration", 6, 2, 15, 0);
+globalvar Number immortalityDuration = WorkshopSettingInteger("Immortality", "Unkillable Duration", 6, 2, 15, 0);
 
 playervar Number immortalityTimer;
 playervar Number immortalityProgressBar;
