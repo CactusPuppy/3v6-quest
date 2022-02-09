@@ -1,0 +1,50 @@
+import "../main.ostw";
+
+globalvar Number speedBoostDuration = WorkshopSettingInteger("Speed Boost Stim", "Speed Boost Duration", 15, 1, 60, 0);
+globalvar Number speedBoostAmount = WorkshopSettingReal("Speed Boost Stim", "Speed Boost Percent Increase", 25, 10, 100, 1);
+globalvar Boolean canStackSpeedBoosts = WorkshopSettingToggle("Speed Boost Stim", "Stackable Speed Boosts", true, 2);
+
+playervar Number speedBoostExpiryTimes = [];
+playervar Number personalSpeedBoostPercent = 100;
+playervar Any[] speedBoostEffects = [];
+
+void useSpeedBooster() "[SUB] Speed Boost stim effects"
+{
+  personalSpeedBoostPercent += speedBoostAmount;
+  ModifyVariable(speedBoostExpiryTimes, Operation.AppendToArray, TotalTimeElapsed() + speedBoostAmount);
+  # Update move speed
+  SetMoveSpeed(EventPlayer(), personalSpeedBoostPercent);
+  # Create speed boost effects if they do not exist
+  if (CountOf(speedBoostEffects) == 0) {
+    CreateEffect(
+      VisibleTo:        AllPlayers(),
+      Type:             Effect.Soldier76SprintingEffect,
+      Color:            null,
+      Position:         EventPlayer(),
+      Radius:           1,
+      Reevaluation:     EffectRev.VisibleTo
+    );
+    ModifyVariable(speedBoostEffects, Operation.AppendToArray, LastCreatedEntity());
+  }
+}
+
+rule: "[SPEED BOOST] When next speed boost instance is done, pop it off the stack"
+Event.OngoingPlayer
+if (CountOf(speedBoostExpiryTimes))
+if (TotalTimeElapsed() > FirstOf(speedBoostExpiryTimes))
+{
+  while (CountOf(speedBoostExpiryTimes) && TotalTimeElapsed() > FirstOf(speedBoostExpiryTimes)) {
+    personalSpeedBoostPercent = Max(personalSpeedBoostPercent - speedBoostAmount, 100);
+    SetMoveSpeed(EventPlayer(), personalSpeedBoostPercent);
+    ModifyVariable(speedBoostExpiryTimes, Operation.RemoveFromArrayByIndex, 0);
+  }
+  # If no more speed boosts are active, remove the visual effects
+  if (CountOf(speedBoostExpiryTimes) == 0) {
+    while (CountOf(speedBoostEffects) > 0) {
+      DestroyEffect(FirstOf(speedBoostEffects));
+      ModifyVariable(speedBoostEffects, Operation.RemoveFromArrayByIndex, 0);
+    }
+  }
+  Wait(0.016, WaitBehavior.RestartWhenTrue);
+}
+

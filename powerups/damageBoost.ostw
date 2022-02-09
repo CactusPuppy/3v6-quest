@@ -1,0 +1,58 @@
+import "../main.ostw";
+
+globalvar Number damageBoostDuration = WorkshopSettingReal("Damage Boost Stim", "Damage Boost Duration", 10, 2, 30, 0);
+globalvar Number damageBoostAmount = WorkshopSettingReal("Damage Boost Stim", "Damage Boost Percent Increase", 30, 0, 100, 1);
+globalvar Boolean canStackDamageBoosts = WorkshopSettingToggle("Damage Boost Stim", "Stackable Damage Boosts", true, 2);
+
+playervar Number[] damageBoostExpiryTimes = [];
+playervar Number personalDamageBoostPercent = 100;
+playervar Any damageBoostModID;
+playervar Any[] damageBoostEffects = [];
+
+void useDamageBooster() "[SUB] Damage Boost stim effects"
+{
+  personalDamageBoostPercent += damageBoostAmount;
+  ModifyVariable(damageBoostExpiryTimes, Operation.AppendToArray, TotalTimeElapsed() + damageBoostDuration);
+  # Create the damge boost effects if they do not already exist
+  if (CountOf(damageBoostEffects) == 0) {
+    CreateEffect(
+      VisibleTo:          AllPlayers(),
+      Type:               Effect.MercyDamageBoostedEffect,
+      Color:              <Color>TeamOf(EventPlayer()),
+      Radius:             1.5,
+      Reevaluation:       EffectRev.VisibleTo
+    );
+    ModifyVariable(damageBoostEffects, Operation.AppendToArray, LastCreatedEntity());
+    CreateEffect(
+      VisibleTo:          EventPlayer(),
+      Type:               Effect.MercyDamageBoostedSound,
+      Color:              <Color>TeamOf(EventPlayer()),
+      Radius:             100,
+      Reevaluation:       EffectRev.None
+    );
+    ModifyVariable(damageBoostEffects, Operation.AppendToArray, LastCreatedEntity());
+    # Create the damage boost mod
+    StartDamageModification(AllPlayers(OppositeTeamOf(TeamOf(EventPlayer()))), EventPlayer(), personalDamageBoostPercent, DamageModificationRev.ReceiversDamagersAndDamagePercent);
+    damageBoostModID = LastDamageModificationID();
+  }
+}
+
+rule: "[DAMAGE BOOST] When next damage boost instance is done, pop it off the stack"
+Event.OngoingPlayer
+if (CountOf(damageBoostExpiryTimes) > 0)
+if (TotalTimeElapsed() > FirstOf(damageBoostExpiryTimes))
+{
+  while (CountOf(damageBoostExpiryTimes) > 0 && TotalTimeElapsed() > FirstOf(damageBoostExpiryTimes)) {
+    personalDamageBoostPercent = Max(personalDamageBoostPercent - damageBoostAmount, 100);
+    ModifyVariable(damageBoostExpiryTimes, Operation.RemoveFromArrayByIndex, 0);
+  }
+  # If no more damage boosts active, remove the visual effects
+  if (CountOf(damageBoostExpiryTimes) == 0) {
+    while (CountOf(damageBoostEffects) > 0) {
+      DestroyEffect(FirstOf(damageBoostEffects));
+      ModifyVariable(damageBoostEffects, Operation.RemoveFromArrayByIndex, 0);
+    }
+    StopDamageModification(damageBoostModID);
+  }
+  Wait(0.016, WaitBehavior.RestartWhenTrue);
+}

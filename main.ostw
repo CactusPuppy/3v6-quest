@@ -70,18 +70,30 @@ if (IsButtonHeld(Button: Button.Interact))
 
 void CheckUse() "[SUB] Can player use the currently selected powerup?"
 {
+  # Check current powerup, and cancel if empty
+  if (powerupInventory[powerupIndex] == 0) {
+    return;
+  }
   # Cannot use by default
   canActivatePowerupFlag = false;
-  // TODO: Check quantity of current powerup as a sanity check!
   switch(powerupIndex) {
     case PowerupType.FULL_HEALTH:
-      canActivatePowerupFlag = HasSpawned(EventPlayer()) && IsAlive(EventPlayer()) && Health(EventPlayer()) < MaxHealth(EventPlayer());
+      canActivatePowerupFlag = IsAlive(EventPlayer()) && Health(EventPlayer()) < MaxHealth(EventPlayer());
       break;
     case PowerupType.IMMORTALITY:
-      canActivatePowerupFlag = HasSpawned(EventPlayer()) && IsAlive(EventPlayer()) && immortalityTimer == 0;
+      canActivatePowerupFlag = IsAlive(EventPlayer()) && immortalityTimer == 0;
       break;
     case PowerupType.SELF_RES:
       canActivatePowerupFlag = IsDead(EventPlayer());
+      break;
+    case PowerupType.DAMAGE_BOOST:
+      canActivatePowerupFlag = IsAlive(EventPlayer()) && (canStackDamageBoosts || CountOf(damageBoostExpiryTimes) == 0);
+      break;
+    case PowerupType.SPEED_BOOST:
+      canActivatePowerupFlag = IsAlive(EventPlayer()) && (canStackSpeedBoosts || CountOf(speedBoostExpiryTimes) == 0);
+      break;
+    case PowerupType.INVISIBILITY:
+      canActivatePowerupFlag = IsAlive(EventPlayer()) && invisibilityTimer == 0;
       break;
   }
 }
@@ -94,6 +106,18 @@ void UseCurrentPower() "[SUB] Dispatcher for powerup use event"
       break;
     case PowerupType.IMMORTALITY:
       useImmortality();
+      break;
+    case PowerupType.SELF_RES:
+      resSelf();
+      break;
+    case PowerupType.DAMAGE_BOOST:
+      useDamageBooster();
+      break;
+    case PowerupType.SPEED_BOOST:
+      useSpeedBooster();
+      break;
+    case PowerupType.INVISIBILITY:
+      useInvisibility();
       break;
   }
   # Decrement inventory of powerups
@@ -192,6 +216,11 @@ void incrementPowerupIndex() "[SUB] Find next valid powerupIndex in the positive
 
 import "powerups/fullRestore.ostw";
 import "powerups/immortality.ostw";
+import "powerups/selfRes.ostw";
+import "powerups/damageBoost.ostw";
+import "powerups/speedBoost.ostw";
+import "powerups/invisibility.ostw";
+import "powerups/shrinking.ostw";
 
 // TODO: Automatically choose a new powerup when the current one is exhausted
 // TODO: Create powerup selection interface

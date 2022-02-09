@@ -1,0 +1,57 @@
+import "../main.ostw";
+
+playervar Any mercyRezBot;
+void resSelf() "[SUB] Self-Resurrect Totem effects"
+{
+  if (DistanceBetween(NearestWalkablePosition(PositionOf(EventPlayer())), PositionOf(EventPlayer())) > 0.5) {
+    Teleport(EventPlayer(), NearestWalkablePosition(PositionOf(EventPlayer())));
+    Resurrect(EventPlayer());
+    Kill(EventPlayer(), null);
+  }
+  CreateDummyBot(
+    Hero:         Hero.Mercy,
+    Team:         TeamOf(EventPlayer()),
+    Slot:         SlotOf(EventPlayer()) + NumberOfPlayers(TeamOf(EventPlayer())),
+    Position:     PositionOf(EventPlayer()) + Up(),
+    Facing:       Down()
+  );
+  mercyRezBot = LastCreatedEntity();
+  SetInvisible(mercyRezBot, InvisibleTo.All);
+  StartForcingDummyBotName(mercyRezBot, "Self Resurrect");
+  StartForcingPlayerPosition(mercyRezBot, PositionOf(EventPlayer()) + Up(), true);
+  SetStatus(mercyRezBot, null, Status.PhasedOut, 10);
+  MinWait();
+  SetFacing(mercyRezBot, Down());
+  StartHoldingButton(mercyRezBot, Button.Ability2);
+  # Necessary to ensure that Mercy-bot starts the rez
+  Wait(0.25);
+  WaitUntil(IsAlive(EventPlayer()) || !IsUsingAbility2(mercyRezBot), 2);
+  DestroyDummyBot(TeamOf(mercyRezBot), SlotOf(mercyRezBot));
+}
+
+
+
+/** The below code does not work if the player falls into the V O I D.
+  * Need detection of unrecoverability for alternative or straight alternative.
+ */
+
+// MinWait();
+  // CreateDummyBot(
+  //   Hero:         Hero.Mercy,
+  //   Team:         TeamOf(EventPlayer()),
+  //   Slot:         SlotOf(EventPlayer()) + NumberOfPlayers(TeamOf(EventPlayer())),
+  //   Position:     PositionOf(EventPlayer()) + Up(),
+  //   Facing:       Down()
+  // );
+  // mercyRezBot = LastCreatedEntity();
+  // SetInvisible(mercyRezBot, InvisibleTo.All);
+  // StartForcingDummyBotName(mercyRezBot, "Self Resurrect");
+  // StartForcingPlayerPosition(mercyRezBot, PositionOf(EventPlayer()) + Up(), true);
+  // SetStatus(mercyRezBot, null, Status.PhasedOut, 10);
+  // MinWait();
+  // SetFacing(mercyRezBot, Down());
+  // StartHoldingButton(mercyRezBot, Button.Ability2);
+  // # Necessary to ensure that Mercy-bot starts the rez
+  // Wait(0.25);
+  // WaitUntil(IsAlive(EventPlayer()) || !IsUsingAbility2(mercyRezBot), 2);
+  // DestroyDummyBot(TeamOf(mercyRezBot), SlotOf(mercyRezBot));

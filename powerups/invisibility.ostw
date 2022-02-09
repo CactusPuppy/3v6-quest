@@ -1,0 +1,112 @@
+import "../main.ostw";
+
+globalvar Number invisibilityDuration = WorkshopSettingInteger("Invisibility Dust", "Invisibility Duration", 10, 1, 60, 0);
+
+playervar Number invisibilityTimer;
+playervar Any[] invisibilityEffects;
+playervar Number invisibilityProgressBar;
+
+void useInvisibility() "[SUB] Use invisibility dust" {
+  while (CountOf(invisibilityEffects) > 0) {
+    DestroyEffect(FirstOf(invisibilityEffects));
+    ModifyVariable(invisibilityEffects, Operation.RemoveFromArrayByIndex, 0);
+  }
+  SetInvisible(EventPlayer(), InvisibleTo.Enemies);
+  PlayEffect(
+    VisibleTo:        AllPlayers(),
+    Type:             PlayEffect.SombraTranslocatorDisappearEffect,
+    Color:            <Color>TeamOf(EventPlayer()),
+    Position:         PositionOf(EventPlayer()),
+    Radius:           1
+  );
+  PlayEffect(
+    VisibleTo:        AllPlayers(),
+    Type:             PlayEffect.SombraTranslocatingMaterialEffect,
+    Color:            <Color>TeamOf(EventPlayer()),
+    Position:         EventPlayer(),
+    Radius:           1
+  );
+  PlayEffect(
+    VisibleTo:        AllPlayers(),
+    Type:             PlayEffect.BaptisteBioticLauncherExplosionSound,
+    Color:            <Color>TeamOf(EventPlayer()),
+    Position:         PositionOf(EventPlayer()),
+    Radius:           200
+  );
+  CreateEffect(
+    VisibleTo:        AllPlayers(TeamOf(EventPlayer())),
+    Type:             Effect.ReaperWraithFormEffect,
+    Color:            <Color>TeamOf(EventPlayer()),
+    Position:         EventPlayer(),
+    Radius:           1,
+    Reevaluation:     EffectRev.VisibleToPositionAndRadius
+  );
+  ModifyVariable(invisibilityEffects, Operation.AppendToArray, LastCreatedEntity());
+  invisibilityTimer = invisibilityDuration;
+  ChaseVariableAtRate(invisibilityTimer, 0, 1, RateChaseReevaluation.None);
+  CreateProgressBarHudText(
+    VisibleTo:          invisibilityTimer > 0 ? EventPlayer() : null,
+    Value:              invisibilityTimer * 100 / invisibilityDuration,
+    Text:               <"<0>", powerupNames[PowerupType.INVISIBILITY]>,
+    Location.Top, 11,
+    ProgressBarColor:   Color.Purple,
+    TextColor:          Color.White,
+    ProgressBarHudEvaluation.VisibleToAndValues
+  );
+  invisibilityProgressBar = LastTextID();
+}
+
+rule: "[INVISIBILITY] When player takes damage, immediately end stealth"
+Event.OnDamageTaken
+if (invisibilityTimer > 0)
+# Leniency period
+if (invisibilityDuration - invisibilityTimer > 0.2)
+{
+  invisibilityTimer = 0;
+}
+
+rule: "[INVISIBILITY] When player deals damage, immediately end stealth"
+Event.OnDamageDealt
+if (invisibilityTimer > 0)
+{
+  invisibilityTimer = 0;
+}
+
+rule: "[INVISIBILITY] End invisibility"
+Event.OngoingPlayer
+if (invisibilityTimer > 0)
+{
+  WaitUntil(invisibilityTimer == 0, invisibilityDuration);
+
+  invisibilityTimer = 0;
+  StopChasingVariable(invisibilityTimer);
+
+  SetInvisible(EventPlayer(), InvisibleTo.None);
+  PlayEffect(
+    VisibleTo:        AllPlayers(),
+    Type:             PlayEffect.SombraTranslocatorReappearEffect,
+    Color:            <Color>TeamOf(EventPlayer()),
+    Position:         PositionOf(EventPlayer()),
+    Radius:           1
+  );
+  PlayEffect(
+    VisibleTo:        AllPlayers(),
+    Type:             PlayEffect.SombraTranslocatingMaterialEffect,
+    Color:            <Color>TeamOf(EventPlayer()),
+    Position:         EventPlayer(),
+    Radius:           1
+  );
+  PlayEffect(
+    VisibleTo:        AllPlayers(),
+    Type:             PlayEffect.SombraTranslocatorReappearSound,
+    Color:            <Color>TeamOf(EventPlayer()),
+    Position:         PositionOf(EventPlayer()),
+    Radius:           200
+  );
+  while (CountOf(invisibilityEffects) > 0) {
+    DestroyEffect(FirstOf(invisibilityEffects));
+    ModifyVariable(invisibilityEffects, Operation.RemoveFromArrayByIndex, 0);
+  }
+  DestroyProgressBarHudText(invisibilityProgressBar);
+}
+
