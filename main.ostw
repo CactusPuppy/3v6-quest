@@ -35,19 +35,19 @@ enum PowerupType {
   BLINDNESS,
   INSTA_ULT
 }
-
+// ABILITY NAME                            ENUM VALUE         ABILITY ICON
 globalvar String[] powerupNames = [
-  "Full Health Potion",                 // FULL_HEALTH
-  "Immortality Potion",                 // IMMORTALITY
-  "Self-Resurrect Totem",               // SELF_RES
-  "Damage Boost Stim",                  // DAMAGE_BOOST,
-  "Speed Boost Stim",                   // SPEED_BOOST,
-  "Invisibility Dust",                  // INVISIBILITY,
-  "Shrinking Tablet",                   // SHRINKING,
-  "Giant Juice",                        // ENLARGENING,
-  "Cooldown Hastener",                  // COOLDOWN_HASTE,
-  "Smoke Bomb",                         // BLINDNESS,
-  "Insta-Ult Pack"                      // INSTA_ULT,
+  "Full Health Potion",                 // FULL_HEALTH        Regenerative Burst
+  "Immortality Potion",                 // IMMORTALITY        Immortality Field
+  "Self-Resurrect Totem",               // SELF_RES           Resurrect
+  "Damage Boost Stim",                  // DAMAGE_BOOST,      Amp Matrix or Nano Boost
+  "Speed Boost Stim",                   // SPEED_BOOST,       Charge
+  "Invisibility Dust",                  // INVISIBILITY,      Eye
+  "Shrinking Tablet",                   // SHRINKING,         Piledriver
+  "Giant Juice",                        // ENLARGENING,       Exo Boots
+  "Cooldown Hastener",                  // COOLDOWN_HASTE,    Amp It Up
+  "Smoke Bomb",                         // BLINDNESS,         Dizzy
+  "Insta-Ult Pack"                      // INSTA_ULT,         Overload
 ];
 
 rule: "Set Powerup Team - not in global initialization rule to ensure ordering" -1
