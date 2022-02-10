@@ -100,6 +100,9 @@ void CheckUse() "[SUB] Can player use the currently selected powerup?"
     case PowerupType.ENLARGENING:
       canActivatePowerupFlag = IsAlive(EventPlayer()) && shrinkTimer == 0 && giantTimer == 0;
       break;
+    case PowerupType.COOLDOWN_HASTE:
+      canActivatePowerupFlag = IsAlive(EventPlayer()) && cooldownHasteTimer == 0;
+      break;
   }
 }
 
@@ -129,6 +132,9 @@ void UseCurrentPower() "[SUB] Dispatcher for powerup use event"
       break;
     case PowerupType.ENLARGENING:
       useGiant();
+      break;
+    case PowerupType.COOLDOWN_HASTE:
+      useCooldownHaste();
       break;
   }
   # Decrement inventory of powerups
@@ -233,6 +239,7 @@ import "powerups/speedBoost.ostw";
 import "powerups/invisibility.ostw";
 import "powerups/shrinking.ostw";
 import "powerups/giant.ostw";
+import "powerups/cooldownHaste.ostw";
 
 // TODO: Automatically choose a new powerup when the current one is exhausted
 // TODO: Create powerup selection interface

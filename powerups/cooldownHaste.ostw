@@ -1,0 +1,159 @@
+import "../main.ostw";
+
+Number COOLDOWN_UPDATE_PERIOD: 0.5;
+
+globalvar Number cooldownHasteDuration = WorkshopSettingInteger("Cooldown Hastener", "Haste Duration", 15, 1, 60, 0);
+globalvar Number cooldownHasteRate = WorkshopSettingReal("Cooldown Hastener", "Hastened Cooldown Rate", 2, 1, 10, 1);
+
+playervar Number cooldownHasteTimer;
+playervar Any[] cooldownHasteEffects = [];
+playervar Number[] finalSegmentCache;
+
+// Jump, Reload, Interact, and Melee not included because no hero
+// currently has a cooldown ability associated with those buttons
+enum AbilityButtons {
+  PrimaryFire,
+  SecondaryFire,
+  Ability1,
+  Ability2,
+  Crouch
+}
+
+void useCooldownHaste() "[SUB] Cooldown Hastener effects"
+{
+  cooldownHasteTimer = cooldownHasteDuration;
+  ChaseVariableAtRate(cooldownHasteTimer, 0, 1, RateChaseReevaluation.None);
+}
+
+rule: "[COOLDOWN_HASTE] On timer out, stop chasing and clean up effects"
+Event.OngoingPlayer
+if (cooldownHasteTimer > 0)
+{
+  WaitUntil(cooldownHasteTimer == 0, 1000000);
+
+  StopChasingVariable(cooldownHasteTimer);
+  while (CountOf(cooldownHasteEffects) > 0) {
+    DestroyEffect(FirstOf(cooldownHasteEffects));
+    ModifyVariable(cooldownHasteEffects, Operation.RemoveFromArrayByIndex, 0);
+  }
+}
+
+rule: "[COOLDOWN_HASTE] Speed up Primary Fire cooldown"
+Event.OngoingPlayer
+if (cooldownHasteTimer > 0)
+if (AbilityCooldown(Button: Button.PrimaryFire) > 0)
+{
+  if (Min(cooldownHasteTimer, AbilityCooldown(Button: Button.PrimaryFire)) < COOLDOWN_UPDATE_PERIOD) {
+    finalSegmentCache[AbilityButtons.PrimaryFire] = Min(cooldownHasteTimer, AbilityCooldown(Button: Button.PrimaryFire));
+    Wait(finalSegmentCache[AbilityButtons.PrimaryFire]);
+    SetAbilityCooldown(
+      Player:             EventPlayer(),
+      Button:             Button.PrimaryFire,
+      Cooldown:           AbilityCooldown(Button: Button.PrimaryFire) - finalSegmentCache[AbilityButtons.PrimaryFire] * (cooldownHasteRate - 1)
+    );
+    return;
+  }
+  Wait(COOLDOWN_UPDATE_PERIOD);
+  SetAbilityCooldown(
+    Player:             EventPlayer(),
+    Button:             Button.PrimaryFire,
+    Cooldown:           AbilityCooldown(Button: Button.PrimaryFire) - COOLDOWN_UPDATE_PERIOD * (cooldownHasteRate - 1)
+  );
+  LoopIfConditionIsTrue();
+}
+
+rule: "[COOLDOWN_HASTE] Speed up Secondary Fire cooldown"
+Event.OngoingPlayer
+if (cooldownHasteTimer > 0)
+if (AbilityCooldown(Button: Button.SecondaryFire) > 0)
+{
+  if (Min(cooldownHasteTimer, AbilityCooldown(Button: Button.SecondaryFire)) < COOLDOWN_UPDATE_PERIOD) {
+    finalSegmentCache[AbilityButtons.SecondaryFire] = Min(cooldownHasteTimer, AbilityCooldown(Button: Button.SecondaryFire));
+    Wait(finalSegmentCache[AbilityButtons.SecondaryFire]);
+    SetAbilityCooldown(
+      Player:             EventPlayer(),
+      Button:             Button.SecondaryFire,
+      Cooldown:           AbilityCooldown(Button: Button.SecondaryFire) - finalSegmentCache[AbilityButtons.SecondaryFire] * (cooldownHasteRate - 1)
+    );
+    return;
+  }
+  Wait(COOLDOWN_UPDATE_PERIOD);
+  SetAbilityCooldown(
+    Player:             EventPlayer(),
+    Button:             Button.SecondaryFire,
+    Cooldown:           AbilityCooldown(Button: Button.SecondaryFire) - COOLDOWN_UPDATE_PERIOD * (cooldownHasteRate - 1)
+  );
+  LoopIfConditionIsTrue();
+}
+
+rule: "[COOLDOWN_HASTE] Speed up Ability 1 cooldown"
+Event.OngoingPlayer
+if (cooldownHasteTimer > 0)
+if (AbilityCooldown(Button: Button.Ability1) > 0)
+{
+  if (Min(cooldownHasteTimer, AbilityCooldown(Button: Button.Ability1)) < COOLDOWN_UPDATE_PERIOD) {
+    finalSegmentCache[AbilityButtons.Ability1] = Min(cooldownHasteTimer, AbilityCooldown(Button: Button.Ability1));
+    Wait(finalSegmentCache[AbilityButtons.Ability1]);
+    SetAbilityCooldown(
+      Player:             EventPlayer(),
+      Button:             Button.Ability1,
+      Cooldown:           AbilityCooldown(Button: Button.Ability1) - finalSegmentCache[AbilityButtons.Ability1] * (cooldownHasteRate - 1)
+    );
+    return;
+  }
+  Wait(COOLDOWN_UPDATE_PERIOD);
+  SetAbilityCooldown(
+    Player:             EventPlayer(),
+    Button:             Button.Ability1,
+    Cooldown:           AbilityCooldown(Button: Button.Ability1) - COOLDOWN_UPDATE_PERIOD * (cooldownHasteRate - 1)
+  );
+  LoopIfConditionIsTrue();
+}
+
+rule: "[COOLDOWN_HASTE] Speed up Ability 2 cooldown"
+Event.OngoingPlayer
+if (cooldownHasteTimer > 0)
+if (AbilityCooldown(Button: Button.Ability2) > 0)
+{
+  if (Min(cooldownHasteTimer, AbilityCooldown(Button: Button.Ability2)) < COOLDOWN_UPDATE_PERIOD) {
+    finalSegmentCache[AbilityButtons.Ability2] = Min(cooldownHasteTimer, AbilityCooldown(Button: Button.Ability2));
+    Wait(finalSegmentCache[AbilityButtons.Ability2]);
+    SetAbilityCooldown(
+      Player:             EventPlayer(),
+      Button:             Button.Ability2,
+      Cooldown:           AbilityCooldown(Button: Button.Ability2) - finalSegmentCache[AbilityButtons.Ability2] * (cooldownHasteRate - 1)
+    );
+    return;
+  }
+  Wait(COOLDOWN_UPDATE_PERIOD);
+  SetAbilityCooldown(
+    Player:             EventPlayer(),
+    Button:             Button.Ability2,
+    Cooldown:           AbilityCooldown(Button: Button.Ability2) - COOLDOWN_UPDATE_PERIOD * (cooldownHasteRate - 1)
+  );
+  LoopIfConditionIsTrue();
+}
+
+rule: "[COOLDOWN_HASTE] Speed up Crouch cooldown"
+Event.OngoingPlayer
+if (cooldownHasteTimer > 0)
+if (AbilityCooldown(Button: Button.Crouch) > 0)
+{
+  if (Min(cooldownHasteTimer, AbilityCooldown(Button: Button.Crouch)) < COOLDOWN_UPDATE_PERIOD) {
+    finalSegmentCache[AbilityButtons.Crouch] = Min(cooldownHasteTimer, AbilityCooldown(Button: Button.Crouch));
+    Wait(finalSegmentCache[AbilityButtons.Crouch]);
+    SetAbilityCooldown(
+      Player:             EventPlayer(),
+      Button:             Button.Crouch,
+      Cooldown:           AbilityCooldown(Button: Button.Crouch) - finalSegmentCache[AbilityButtons.Crouch] * (cooldownHasteRate - 1)
+    );
+    return;
+  }
+  Wait(COOLDOWN_UPDATE_PERIOD);
+  SetAbilityCooldown(
+    Player:             EventPlayer(),
+    Button:             Button.Crouch,
+    Cooldown:           AbilityCooldown(Button: Button.Crouch) - COOLDOWN_UPDATE_PERIOD * (cooldownHasteRate - 1)
+  );
+  LoopIfConditionIsTrue();
+}
