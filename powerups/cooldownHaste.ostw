@@ -1,6 +1,6 @@
 import "../main.ostw";
 
-Number COOLDOWN_UPDATE_PERIOD: 0.5;
+Number COOLDOWN_UPDATE_PERIOD: 0.1;
 
 globalvar Number cooldownHasteDuration = WorkshopSettingInteger("Cooldown Hastener", "Haste Duration", 15, 1, 60, 0);
 globalvar Number cooldownHasteRate = WorkshopSettingReal("Cooldown Hastener", "Hastened Cooldown Rate", 2, 1, 10, 1);
