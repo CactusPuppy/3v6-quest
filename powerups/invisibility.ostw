@@ -7,7 +7,7 @@ playervar Any[] invisibilityEffects = [];
 playervar Number invisibilityProgressBar;
 
 void useInvisibility() "[SUB] Use invisibility dust" {
-  while (CountOf(invisibilityEffects) > 0) {
+  while (invisibilityEffects != []) {
     DestroyEffect(FirstOf(invisibilityEffects));
     ModifyVariable(invisibilityEffects, Operation.RemoveFromArrayByIndex, 0);
   }
@@ -103,7 +103,7 @@ if (invisibilityTimer > 0)
     Position:         PositionOf(EventPlayer()),
     Radius:           200
   );
-  while (CountOf(invisibilityEffects) > 0) {
+  while (invisibilityEffects != []) {
     DestroyEffect(FirstOf(invisibilityEffects));
     ModifyVariable(invisibilityEffects, Operation.RemoveFromArrayByIndex, 0);
   }

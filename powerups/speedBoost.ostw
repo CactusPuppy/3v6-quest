@@ -40,7 +40,7 @@ if (TotalTimeElapsed() > FirstOf(speedBoostExpiryTimes))
   }
   # If no more speed boosts are active, remove the visual effects
   if (CountOf(speedBoostExpiryTimes) == 0) {
-    while (CountOf(speedBoostEffects) > 0) {
+    while (speedBoostEffects != []) {
       DestroyEffect(FirstOf(speedBoostEffects));
       ModifyVariable(speedBoostEffects, Operation.RemoveFromArrayByIndex, 0);
     }

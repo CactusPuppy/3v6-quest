@@ -39,16 +39,16 @@ void useDamageBooster() "[SUB] Damage Boost stim effects"
 
 rule: "[DAMAGE BOOST] When next damage boost instance is done, pop it off the stack"
 Event.OngoingPlayer
-if (CountOf(damageBoostExpiryTimes) > 0)
+if (damageBoostExpiryTimes != [])
 if (TotalTimeElapsed() > FirstOf(damageBoostExpiryTimes))
 {
-  while (CountOf(damageBoostExpiryTimes) > 0 && TotalTimeElapsed() > FirstOf(damageBoostExpiryTimes)) {
+  while (damageBoostExpiryTimes != [] && TotalTimeElapsed() > FirstOf(damageBoostExpiryTimes)) {
     personalDamageBoostPercent = Max(personalDamageBoostPercent - damageBoostAmount, 100);
     ModifyVariable(damageBoostExpiryTimes, Operation.RemoveFromArrayByIndex, 0);
   }
   # If no more damage boosts active, remove the visual effects
   if (CountOf(damageBoostExpiryTimes) == 0) {
-    while (CountOf(damageBoostEffects) > 0) {
+    while (damageBoostEffects != []) {
       DestroyEffect(FirstOf(damageBoostEffects));
       ModifyVariable(damageBoostEffects, Operation.RemoveFromArrayByIndex, 0);
     }

@@ -8,7 +8,7 @@ playervar Any[] immortalityEffects = [];
 
 void useImmortality() "[SUB] Immortality potion effects"
 {
-  while (CountOf(immortalityEffects) > 0) {
+  while (immortalityEffects != []) {
     DestroyEffect(FirstOf(immortalityEffects));
     ModifyVariable(immortalityEffects, Operation.RemoveFromArrayByIndex, 0);
   }
@@ -54,7 +54,7 @@ if (immortalityTimer > 0)
   StopChasingVariable(immortalityTimer);
 
   ClearStatus(EventPlayer(), Status.Unkillable);
-  while (CountOf(immortalityEffects) > 0) {
+  while (immortalityEffects != []) {
     DestroyEffect(FirstOf(immortalityEffects));
     ModifyVariable(immortalityEffects, Operation.RemoveFromArrayByIndex, 0);
   }

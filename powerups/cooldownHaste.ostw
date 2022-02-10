@@ -32,7 +32,7 @@ if (cooldownHasteTimer > 0)
   WaitUntil(cooldownHasteTimer == 0, 1000000);
 
   StopChasingVariable(cooldownHasteTimer);
-  while (CountOf(cooldownHasteEffects) > 0) {
+  while (cooldownHasteEffects != []) {
     DestroyEffect(FirstOf(cooldownHasteEffects));
     ModifyVariable(cooldownHasteEffects, Operation.RemoveFromArrayByIndex, 0);
   }
