@@ -2,9 +2,10 @@
   "Extensions": {
     "Buff and Debuff Sounds": true,         // 2 points
     "Buff Status Effects": true,            // 2 points
+    "Debuff Status Effects": true,          // 2 points
     "Energy Explosion Effects": true,       // 4 points
     "Explosion Sounds": true                // 2 points
-  },                                        // TOTAL: 10 points
+  },                                        // TOTAL: 12 points
   "Mode Name": "SVB's Ladd­er MMO Challenge",
   "Description": "3 Powered-Up Content Creators vs. 6 Ladd­er players. Who will win?",
   "Lobby": {
