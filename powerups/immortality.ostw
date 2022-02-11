@@ -35,7 +35,7 @@ void useImmortality() "[SUB] Immortality potion effects"
   CreateProgressBarHudText(
     VisibleTo:          immortalityTimer > 0 ? EventPlayer() : null,
     Value:              immortalityTimer * 100 / immortalityDuration,
-    Text:               <"<0>", powerupNames[PowerupType.IMMORTALITY]>,
+    Text:               <"<0>", powerupData[PowerupType.IMMORTALITY][PowerupDataKey.Name]>,
     Location.Top, 10,
     ProgressBarColor:   Color.Aqua,
     TextColor:          Color.White,

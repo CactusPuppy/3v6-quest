@@ -35,20 +35,25 @@ enum PowerupType {
   BLINDNESS,
   INSTA_ULT
 }
-// ABILITY NAME                            ENUM VALUE         ABILITY ICON
-globalvar String[] powerupNames = [
-  "Full Health Potion",                 // FULL_HEALTH        Regenerative Burst
-  "Immortality Potion",                 // IMMORTALITY        Immortality Field
-  "Self-Resurrect Totem",               // SELF_RES           Resurrect
-  "Damage Boost Stim",                  // DAMAGE_BOOST,      Amp Matrix or Nano Boost
-  "Speed Boost Stim",                   // SPEED_BOOST,       Charge
-  "Invisibility Dust",                  // INVISIBILITY,      Eye
-  "Shrinking Tablet",                   // SHRINKING,         Piledriver
-  "Giant Juice",                        // ENLARGENING,       Exo Boots
-  "Cooldown Hastener",                  // COOLDOWN_HASTE,    Amp It Up
-  "Smoke Bomb",                         // BLINDNESS,         Dizzy
-  "Insta-Ult Pack"                      // INSTA_ULT,         Overload
+// ABILITY NAME                                                                        ITEM PRICE                                                                     ITEM COLOR
+globalvar Any[][] powerupData = [
+  [<"<0> Full Health Potion", AbilityIconString(Hero.Baptiste, Button.Ability1)>,      WorkshopSettingInteger("Item Prices", "Full Health Potion",   20, 0, 100),    CustomColor(230, 81,  81,  255) ],
+  [<"<0> Immortality Potion", AbilityIconString(Hero.Baptiste, Button.Ability2)>,      WorkshopSettingInteger("Item Prices", "Immortality Potion",   30, 0, 100),    CustomColor(123, 255, 200, 255) ],
+  [<"<0> Self-Resurrect Totem", AbilityIconString(Hero.Mercy, Button.Ability2)>,       WorkshopSettingInteger("Item Prices", "Self-Resurrect Totem", 70, 0, 100),    CustomColor(255, 236, 127, 255) ],
+  [<"<0> Damage Boost Stim", AbilityIconString(Hero.Ana, Button.Ultimate)>,            WorkshopSettingInteger("Item Prices", "Damage Boost Stim",    10, 0, 100),    CustomColor(169, 255, 252, 255) ],
+  [<"<0> Speed Boost Stim", AbilityIconString(Hero.Reinhardt, Button.Ability1)>,       WorkshopSettingInteger("Item Prices", "Speed Boost Stim",     10, 0, 100),    CustomColor(132, 204, 101, 255) ],
+  [<"<0> Invisibility Dust", IconString(Icon.Eye)>,                                    WorkshopSettingInteger("Item Prices", "Invisibility Dust",    25, 0, 100),    CustomColor(102, 95,  231, 255) ],
+  [<"<0> Shrinking Tablet", AbilityIconString(Hero.WreckingBall, Button.Crouch)>,      WorkshopSettingInteger("Item Prices", "Shrinking Tablet",     10, 0, 100),    CustomColor(170, 120, 230, 255) ],
+  [<"<0> Giant Juice", AbilityIconString(Hero.Baptiste, Button.Crouch)>,               WorkshopSettingInteger("Item Prices", "Giant Juice",          10, 0, 100),    CustomColor(159, 43,  43,  255) ],
+  [<"<0> Cooldown Hastener", AbilityIconString(Hero.Lucio, Button.Ability2)>,          WorkshopSettingInteger("Item Prices", "Cooldown Hastener",    10, 0, 100),    CustomColor(252, 175, 203, 255) ],
+  [<"<0> Smoke Bomb", IconString(Icon.Dizzy)>,                                         WorkshopSettingInteger("Item Prices", "Smoke Bomb",           10, 0, 100),    CustomColor(200, 200, 200, 255) ],
+  [<"<0> Insta-Ult Pack", AbilityIconString(Hero.Torbjorn, Button.Ability2)>,          WorkshopSettingInteger("Item Prices", "Insta-Ult Pack",       10, 0, 100),    CustomColor(255, 196, 40,  255) ]
 ];
+enum PowerupDataKey {
+  Name,
+  Price,
+  Color
+}
 
 rule: "Set Powerup Team - not in global initialization rule to ensure ordering" -1
 {
@@ -62,7 +67,7 @@ if (IsButtonHeld(Button: Button.Interact))
 {
   CheckUse();
   if (!canActivatePowerupFlag) {
-    SmallMessage(EventPlayer(), <"<0> can't be used right now!", powerupNames[powerupIndex]>);
+    SmallMessage(EventPlayer(), <"<0> can't be used right now!", powerupData[powerupIndex][PowerupDataKey.Name]>);
     PlayEffect(EventPlayer(), PlayEffect.DebuffImpactSound, null, EventPlayer(), 50);
     # Prevent spam
     Wait(0.25);
@@ -144,11 +149,17 @@ void UseCurrentPower() "[SUB] Dispatcher for powerup use event"
     case PowerupType.COOLDOWN_HASTE:
       useCooldownHaste();
       break;
+    case PowerupType.BLINDNESS:
+      useSmokeBomb();
+      break;
+    case PowerupType.INSTA_ULT:
+      useInstaUlt();
+      break;
   }
   # Decrement inventory of powerups
   powerupInventory[powerupIndex] -= 1;
   # Confirm use (cache name to avoid deferment issues)
-  lastPowerupName = powerupNames[powerupIndex];
+  lastPowerupName = powerupData[powerupIndex][PowerupDataKey.Name];
   SmallMessage(EventPlayer(), <"Used <0>", lastPowerupName>);
   # Select next available option if out now
   if (powerupInventory[powerupIndex] == 0) {
@@ -168,19 +179,18 @@ if (TeamOf(EventPlayer()) == PowerupTeam)
     VisibleTo:          EventPlayer(),
     Header:             inventoryIsEmpty
                         ? "   No Items   "
-                        : <"   [<1> + <2>] <4>       <0> [<6>]       <5> [<1> + <3>]   ",
-                            powerupNames[powerupIndex],
+                        : <" < [<1> + <2>]       <0> [<4>]       [<1> + <3>] > ",
+                            powerupData[powerupIndex][PowerupDataKey.Name],
                             InputBindingString(Button.Reload),
                             InputBindingString(Button.PrimaryFire),
                             InputBindingString(Button.SecondaryFire),
-                            IconString(Icon.ArrowLeft),
-                            IconString(Icon.ArrowRight),
                             powerupInventory[powerupIndex]
                         >,
     Subheader:          " ",
     Text:               " ",
-    Location.Top,
+    Location:           Location.Top,
     SortOrder:          3,
+    HeaderColor:        powerupData[powerupIndex][PowerupDataKey.Color],
     Reevaluation:       HudTextRev.VisibleToAndString,
     Spectators:         Spectators.DefaultVisibility
   );
@@ -222,7 +232,7 @@ void decrementPowerupIndex() "[SUB] Find next valid powerupIndex in the negative
   while (powerupInventory[explorePowerupIndex] == 0 && explorePowerupIndex != powerupIndex) {
     explorePowerupIndex -= 1;
     if (explorePowerupIndex < 0) {
-      explorePowerupIndex = CountOf(powerupNames) - 1;
+      explorePowerupIndex = CountOf(powerupData) - 1;
     }
   }
   powerupIndex = explorePowerupIndex;
@@ -232,7 +242,7 @@ void incrementPowerupIndex() "[SUB] Find next valid powerupIndex in the positive
   explorePowerupIndex = powerupIndex + 1;
   while (powerupInventory[explorePowerupIndex] == 0 && explorePowerupIndex != powerupIndex) {
     explorePowerupIndex += 1;
-    if (explorePowerupIndex >= CountOf(powerupNames)) {
+    if (explorePowerupIndex >= CountOf(powerupData)) {
       explorePowerupIndex = 0;
     }
   }

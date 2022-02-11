@@ -47,7 +47,7 @@ void useInvisibility() "[SUB] Use invisibility dust" {
   CreateProgressBarHudText(
     VisibleTo:          invisibilityTimer > 0 ? EventPlayer() : null,
     Value:              invisibilityTimer * 100 / invisibilityDuration,
-    Text:               <"<0>", powerupNames[PowerupType.INVISIBILITY]>,
+    Text:               <"<0>", powerupData[PowerupType.INVISIBILITY][PowerupDataKey.Name]>,
     Location.Top, 11,
     ProgressBarColor:   Color.Purple,
     TextColor:          Color.White,
