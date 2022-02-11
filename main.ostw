@@ -3,17 +3,17 @@ import "customGameSettings.lobby";
 globalvar Team PowerupTeam;
 
 playervar Number[] powerupInventory = [
-  2,                  // FULL_HEALTH
-  2,                  // IMMORTALITY
-  2,                  // SELF_RES
-  2,                  // DAMAGE_BOOST,
-  2,                  // SPEED_BOOST,
-  2,                  // INVISIBILITY,
-  2,                  // SHRINKING,
-  2,                  // ENLARGENING,
-  2,                  // COOLDOWN_HASTE,
-  2,                  // BLINDNESS,
-  2                   // INSTA_ULT,
+  WorkshopSettingInteger("Starter Inventory", "Full Health Potions",    0, 0, 20),
+  WorkshopSettingInteger("Starter Inventory", "Immortality Potions",    0, 0, 20),
+  WorkshopSettingInteger("Starter Inventory", "Self-Resurrect Totems",  0, 0, 20),
+  WorkshopSettingInteger("Starter Inventory", "Damage Boost Stims",     0, 0, 20),
+  WorkshopSettingInteger("Starter Inventory", "Speed Boost Stims",      0, 0, 20),
+  WorkshopSettingInteger("Starter Inventory", "Invisibility Dust Bags", 0, 0, 20),
+  WorkshopSettingInteger("Starter Inventory", "Shrinking Tablets",      0, 0, 20),
+  WorkshopSettingInteger("Starter Inventory", "Giant Juice Vials",      0, 0, 20),
+  WorkshopSettingInteger("Starter Inventory", "Cooldown Hasteners",     0, 0, 20),
+  WorkshopSettingInteger("Starter Inventory", "Smoke Bombs",            0, 0, 20),
+  WorkshopSettingInteger("Starter Inventory", "Insta-Ult Packs",        0, 0, 20)
 ];
 playervar Number powerupIndex;
 playervar Boolean canActivatePowerupFlag = false;
