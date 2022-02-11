@@ -25,6 +25,24 @@ void useSpeedBooster() "[SUB] Speed Boost stim effects"
       Reevaluation:     EffectRev.VisibleTo
     );
     ModifyVariable(speedBoostEffects, Operation.AppendToArray, LastCreatedEntity());
+    CreateEffect(
+      VisibleTo:        AllPlayers(),
+      Type:             Effect.LucioSoundBarrierProtectedEffect,
+      Color:            null,
+      Position:         EventPlayer(),
+      Radius:           1,
+      Reevaluation:     EffectRev.VisibleTo
+    );
+    ModifyVariable(speedBoostEffects, Operation.AppendToArray, LastCreatedEntity());
+    CreateEffect(
+      VisibleTo:        AllPlayers(),
+      Type:             Effect.TorbjornOverloadingSound,
+      Color:            null,
+      Position:         EventPlayer(),
+      Radius:           125,
+      Reevaluation:     EffectRev.VisibleTo
+    );
+    ModifyVariable(speedBoostEffects, Operation.AppendToArray, LastCreatedEntity());
   }
 }
 
