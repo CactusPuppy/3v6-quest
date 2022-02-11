@@ -21,6 +21,15 @@ enum AbilityButtons {
 
 void useCooldownHaste() "[SUB] Cooldown Hastener effects"
 {
+  CreateEffect(
+    VisibleTo:                AllPlayers(),
+    Type:                     Effect.SombraHackingSound,
+    Color:                    null,
+    Position:                 EventPlayer(),
+    Radius:                   170,
+    Reevaluation:             EffectRev.VisibleToPositionAndRadius
+  );
+  ModifyVariable(cooldownHasteEffects, Operation.AppendToArray, LastCreatedEntity());
   cooldownHasteTimer = cooldownHasteDuration;
   ChaseVariableAtRate(cooldownHasteTimer, 0, 1, RateChaseReevaluation.None);
 }
