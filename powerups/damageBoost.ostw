@@ -27,7 +27,7 @@ void useDamageBooster() "[SUB] Damage Boost stim effects"
       VisibleTo:          EventPlayer(),
       Type:               Effect.MercyDamageBoostedSound,
       Color:              <Color>TeamOf(EventPlayer()),
-      Radius:             100,
+      Radius:             75,
       Reevaluation:       EffectRev.None
     );
     ModifyVariable(damageBoostEffects, Operation.AppendToArray, LastCreatedEntity());
