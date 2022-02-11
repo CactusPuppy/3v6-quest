@@ -105,6 +105,12 @@ void CheckUse() "[SUB] Can player use the currently selected powerup?"
     case PowerupType.COOLDOWN_HASTE:
       canActivatePowerupFlag = IsAlive(EventPlayer()) && cooldownHasteTimer == 0;
       break;
+    case PowerupType.BLINDNESS:
+      canActivatePowerupFlag = IsAlive(EventPlayer());
+      break;
+    case PowerupType.INSTA_ULT:
+      canActivatePowerupFlag = IsAlive(EventPlayer()) && UltimateChargePercent(EventPlayer()) < 100;
+      break;
   }
 }
 
@@ -242,6 +248,8 @@ import "powerups/invisibility.ostw";
 import "powerups/shrinking.ostw";
 import "powerups/giant.ostw";
 import "powerups/cooldownHaste.ostw";
+import "powerups/smokeBomb.ostw";
+import "powerups/instaUlt.ostw";
 
 // TODO: Automatically choose a new powerup when the current one is exhausted
 // TODO: Create powerup selection interface

@@ -1,0 +1,103 @@
+import "../main.ostw";
+globalvar Number smokeBombBlindnessDuration = WorkshopSettingReal("Smoke Bomb", "Blindness Duration", 7, 1, 30, 0);
+globalvar Number smokeBombRadius = WorkshopSettingReal("Smoke Bomb", "Smoke Bomb Radius", 12, 0, 50, 1);
+
+playervar Number smokeBombBlindTimer;
+playervar Any[] smokeBombEffects;
+playervar Number smokeBombSphereSize;
+
+void useSmokeBomb() "[SUB] Smoke Bomb effects"
+{
+  PlayEffect(
+    VisibleTo:            AllPlayers(),
+    Type:                 PlayEffect.SigmaHypersphereImplosionEffect,
+    Color:                <Color>TeamOf(EventPlayer()),
+    Position:             EyePosition(EventPlayer()),
+    Radius:               12
+  );
+  PlayEffect(
+    VisibleTo:            AllPlayers(),
+    Type:                 PlayEffect.RingExplosion,
+    Color:                Color.Black,
+    Position:             EyePosition(EventPlayer()),
+    Radius:               2 * smokeBombRadius
+  );
+  PlayEffect(
+    VisibleTo:            AllPlayers(),
+    Type:                 PlayEffect.AsheDynamiteExplosionSound,
+    Color:                null,
+    Position:             PositionOf(EventPlayer()),
+    Radius:               200
+  );
+  # Blind nearby players
+  PlayersWithinRadius(
+    Center:               PositionOf(EventPlayer()),
+    Radius:               smokeBombRadius,
+    Team:                 OppositeTeamOf(TeamOf(EventPlayer())),
+    LOSCheck:             RadiusLOS.Surfaces
+  ).smokeBombBlindTimer = smokeBombBlindnessDuration;
+  # Prevent unintentional double use
+  Wait(1);
+}
+
+rule: "[SMOKE BOMB] When blinded, start timer and create effects"
+Event.OngoingPlayer
+if (smokeBombBlindTimer > 0)
+{
+  # Blindness effect borrowed froms Junkenstein's Victory by Therister
+  smokeBombSphereSize = 200;
+  DisableHeroHud(EventPlayer());
+  StartForcingPlayerOutlines(AllPlayers(), EventPlayer(), false, Color.Black, OutlineType.Default);
+  DisableNameplates(AllPlayers(), EventPlayer());
+  CreateEffect(
+    VisibleTo:            EventPlayer(),
+    Type:                 Effect.Sphere,
+    Color:                Color.Black,
+    Position:             EventPlayer(),
+    Radius:               smokeBombSphereSize,
+    Reevaluation:         EffectRev.VisibleToPositionAndRadius
+  );
+  ModifyVariable(smokeBombEffects, Operation.AppendToArray, LastCreatedEntity());
+  CreateEffect(
+    VisibleTo:            EventPlayer(),
+    Type:                 Effect.BadAura,
+    Color:                Color.Black,
+    Position:             EyePosition(EventPlayer()) + 4 * FacingDirectionOf(EventPlayer()),
+    Radius:               50,
+    Reevaluation:         EffectRev.VisibleToPositionAndRadius
+  );
+  ModifyVariable(smokeBombEffects, Operation.AppendToArray, LastCreatedEntity());
+  CreateEffect(
+    VisibleTo:            RemoveFromArray(AllPlayers(), EventPlayer()),
+    Type:                 Effect.CassidyFlashbangStunnedEffect,
+    Color:                <Color>TeamOf(EventPlayer()),
+    Position:             EventPlayer(),
+    Radius:               1,
+    Reevaluation:         EffectRev.VisibleToPositionAndRadius
+  );
+  ModifyVariable(smokeBombEffects, Operation.AppendToArray, LastCreatedEntity());
+  CreateEffect(
+    VisibleTo:            EventPlayer(),
+    Type:                 Effect.WreckingBallAdaptiveShieldTargetSound,
+    Color:                Color.Black,
+    Position:             EventPlayer(),
+    Radius:               100,
+    Reevaluation:         EffectRev.VisibleToPositionAndRadius
+  );
+  ModifyVariable(smokeBombEffects, Operation.AppendToArray, LastCreatedEntity());
+  ChaseVariableAtRate(smokeBombBlindTimer, 0, 1, RateChaseReevaluation.None);
+
+  WaitUntil(smokeBombBlindTimer == 0, 1000000);
+
+  StopChasingVariable(smokeBombBlindTimer);
+  ChaseVariableAtRate(smokeBombSphereSize, 0, 400, RateChaseReevaluation.None);
+  WaitUntil(smokeBombSphereSize == 0, 1000000);
+  StopChasingVariable(smokeBombSphereSize);
+  EnableHeroHud(EventPlayer());
+  StopForcingPlayerOutlines(AllPlayers(), EventPlayer());
+  EnableNameplates(AllPlayers(), EventPlayer());
+  while (smokeBombEffects != []) {
+    DestroyEffect(FirstOf(smokeBombEffects));
+    ModifyVariable(smokeBombEffects, Operation.RemoveFromArrayByIndex, 0);
+  }
+}

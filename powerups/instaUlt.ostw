@@ -1,0 +1,4 @@
+void useInstaUlt() "[SUB] Insta-ult Pack effects"
+{
+  SetUltimateCharge(EventPlayer(), 100);
+}
