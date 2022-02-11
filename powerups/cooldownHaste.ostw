@@ -30,6 +30,15 @@ void useCooldownHaste() "[SUB] Cooldown Hastener effects"
     Reevaluation:             EffectRev.VisibleToPositionAndRadius
   );
   ModifyVariable(cooldownHasteEffects, Operation.AppendToArray, LastCreatedEntity());
+  CreateEffect(
+    VisibleTo:                RemoveFromArray(AllPlayers(), EventPlayer()),
+    Type:                     Effect.SombraHackedLoopingEffect,
+    Color:                    <Color>OppositeTeamOf(TeamOf(EventPlayer())),
+    Position:                 EventPlayer(),
+    Radius:                   1,
+    Reevaluation:             EffectRev.VisibleToPositionAndRadius
+  );
+  ModifyVariable(cooldownHasteEffects, Operation.AppendToArray, LastCreatedEntity());
   cooldownHasteTimer = cooldownHasteDuration;
   ChaseVariableAtRate(cooldownHasteTimer, 0, 1, RateChaseReevaluation.None);
 }
