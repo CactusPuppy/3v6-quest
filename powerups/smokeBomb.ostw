@@ -36,8 +36,6 @@ void useSmokeBomb() "[SUB] Smoke Bomb effects"
     Team:                 OppositeTeamOf(TeamOf(EventPlayer())),
     LOSCheck:             RadiusLOS.Surfaces
   ).smokeBombBlindTimer = smokeBombBlindnessDuration;
-  # Prevent unintentional double use
-  Wait(1);
 }
 
 rule: "[SMOKE BOMB] When blinded, start timer and create effects"

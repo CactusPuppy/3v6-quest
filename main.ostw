@@ -69,11 +69,11 @@ if (IsButtonHeld(Button: Button.Interact))
   if (!canActivatePowerupFlag) {
     SmallMessage(EventPlayer(), <"<0> can't be used right now!", powerupData[powerupIndex][PowerupDataKey.Name]>);
     PlayEffect(EventPlayer(), PlayEffect.DebuffImpactSound, null, EventPlayer(), 50);
-    # Prevent spam
-    Wait(0.25);
-    return;
+  } else {
+    UseCurrentPower();
   }
-  UseCurrentPower();
+    # Debounce
+  Wait(0.25);
 }
 
 void CheckUse() "[SUB] Can player use the currently selected powerup?"
