@@ -176,7 +176,7 @@ void UseCurrentPower() "[SUB] Dispatcher for powerup use event"
 }
 
 rule: "Initialize player HUD"
-Event.OnPlayerJoin
+Event.OngoingPlayer
 if (TeamOf(EventPlayer()) == PowerupTeam)
 if (!IsWaitingForPlayers())
 {
