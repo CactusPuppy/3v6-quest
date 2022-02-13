@@ -195,10 +195,13 @@ if (!IsWaitingForPlayers())
     Text:               " ",
     Location:           Location.Top,
     SortOrder:          3,
-    HeaderColor:        powerupData[powerupIndex][PowerupDataKey.Color],
+    HeaderColor:        inventoryIsEmpty ? Color.Red : powerupData[powerupIndex][PowerupDataKey.Color],
     Reevaluation:       HudTextRev.VisibleToAndString,
     Spectators:         Spectators.DefaultVisibility
   );
+  if (IsTrueForAll(powerupInventory, ArrayElement() == 0)) {
+    inventoryIsEmpty = true;
+  }
 }
 
 rule: "Scroll forward and back between usable items"
