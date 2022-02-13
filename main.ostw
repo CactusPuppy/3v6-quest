@@ -1,4 +1,5 @@
 import "customGameSettings.lobby";
+import "interface/purchaseInterface.ostw";
 
 globalvar Team PowerupTeam;
 
@@ -20,7 +21,9 @@ playervar Boolean canActivatePowerupFlag = false;
 playervar String lastPowerupName;
 playervar Boolean inventoryIsEmpty; // Caches inventory status
 playervar Any transformEffect;
-playervar Number credits; // TODO: Implement costs and purchasing
+playervar Number baseMoveSpeed = 100;
+playervar Number baseMaxHealth = 100;
+playervar Number baseDamageDealt = 100;
 
 enum PowerupType {
   FULL_HEALTH,
@@ -55,8 +58,9 @@ enum PowerupDataKey {
   Color
 }
 
-rule: "Set Powerup Team - not in global initialization rule to ensure ordering" -1
+rule: "Ensure these settings appear first in the Workshop Settings menu" -1
 {
+  initialCredits = WorkshopSettingInteger("Settings", "Initial Credits Balance", 300, 0, 1000, 0);
   PowerupTeam = [Team.Team1, Team.Team2][WorkshopSettingCombo("Settings", "Powerups Team", 0, ["Team 1", "Team 2"], 0)];
 }
 
@@ -174,6 +178,7 @@ void UseCurrentPower() "[SUB] Dispatcher for powerup use event"
 rule: "Initialize player HUD"
 Event.OnPlayerJoin
 if (TeamOf(EventPlayer()) == PowerupTeam)
+if (!IsWaitingForPlayers())
 {
   CreateHudText(
     VisibleTo:          EventPlayer(),
@@ -261,7 +266,4 @@ import "powerups/cooldownHaste.ostw";
 import "powerups/smokeBomb.ostw";
 import "powerups/instaUlt.ostw";
 
-// TODO: Automatically choose a new powerup when the current one is exhausted
-// TODO: Create powerup selection interface
-
-import "debug.ostw";
+// import "debug.ostw";

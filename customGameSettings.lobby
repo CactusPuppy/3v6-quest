@@ -12,6 +12,9 @@
     "Max Team 1 Players": 3 // 3 Player Slots removed = 12 points
   },
   "Modes": {
+    "All": {
+      "Game Mode Start": "Manual"
+    },
     "Assault": {
       "Competitive Rules": true
     },
