@@ -58,16 +58,15 @@ if (cooldownHasteTimer > 0)
 
 rule: "[COOLDOWN_HASTE] Speed up Primary Fire cooldown"
 Event.OngoingPlayer
-if (cooldownHasteTimer > 0)
 if (AbilityCooldown(Button: Button.PrimaryFire) > 0)
 {
-  if (Min(cooldownHasteTimer, AbilityCooldown(Button: Button.PrimaryFire)) < COOLDOWN_UPDATE_PERIOD) {
+  if (cooldownHasteTimer > 0 && Min(cooldownHasteTimer, AbilityCooldown(Button: Button.PrimaryFire)) < COOLDOWN_UPDATE_PERIOD) {
     finalSegmentCache[AbilityButtons.PrimaryFire] = Min(cooldownHasteTimer, AbilityCooldown(Button: Button.PrimaryFire));
     Wait(finalSegmentCache[AbilityButtons.PrimaryFire]);
     SetAbilityCooldown(
       Player:             EventPlayer(),
       Button:             Button.PrimaryFire,
-      Cooldown:           AbilityCooldown(Button: Button.PrimaryFire) - finalSegmentCache[AbilityButtons.PrimaryFire] * (cooldownHasteRate - 1)
+      Cooldown:           AbilityCooldown(Button: Button.PrimaryFire) - finalSegmentCache[AbilityButtons.PrimaryFire] * (talentBaseStats[TalentType.COOLDOWN]/100 + cooldownHasteRate  - 2)
     );
     return;
   }
@@ -75,7 +74,7 @@ if (AbilityCooldown(Button: Button.PrimaryFire) > 0)
   SetAbilityCooldown(
     Player:             EventPlayer(),
     Button:             Button.PrimaryFire,
-    Cooldown:           AbilityCooldown(Button: Button.PrimaryFire) - COOLDOWN_UPDATE_PERIOD * (cooldownHasteRate - 1)
+    Cooldown:           AbilityCooldown(Button: Button.PrimaryFire) - COOLDOWN_UPDATE_PERIOD * (talentBaseStats[TalentType.COOLDOWN]/100 + (cooldownHasteTimer > 0 ? cooldownHasteRate : 1) - 2)
   );
   LoopIfConditionIsTrue();
 }
