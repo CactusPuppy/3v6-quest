@@ -25,7 +25,7 @@ enum PowerupDataKey {
   Description
 }
 struct PowerupData {
-  // REFACTOR
+  // TODO: Refactor
 }
 enum TalentType {
   MOVE_SPEED, // 0
