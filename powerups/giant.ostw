@@ -56,6 +56,9 @@ if (giantTimer > 0)
 {
   WaitUntil(giantTimer == 0, 1000000);
 
+  if (EntityExists(transformEffect)) {
+    DestroyEffect(transformEffect);
+  }
   StopChasingVariable(giantTimer);
   ChaseVariableOverTime(giantScale, 1, 0.4, TimeChaseReevaluation.None);
   ChaseVariableOverTime(giantPitch, 1, 0.4, TimeChaseReevaluation.None);
@@ -72,7 +75,9 @@ if (giantTimer > 0)
     DestroyEffect(FirstOf(giantEffects));
     ModifyVariable(giantEffects, Operation.RemoveFromArrayByIndex, 0);
   }
-  SetMaxHealth(EventPlayer(), 100);
   StopScalingPlayer(EventPlayer());
   StopModifyingHeroVoiceLines(EventPlayer());
+  WaitUntil(IsAlive(), 9999);
+  # Include small delta to avoid rounding errors
+  SetMaxHealth(EventPlayer(), talentBaseStats[TalentType.MAX_HEALTH] + 0.001);
 }
