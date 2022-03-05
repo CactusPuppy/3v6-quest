@@ -181,6 +181,9 @@ void CheckUse() "[SUB] Can player use the currently selected powerup?"
     case PowerupType.CONTEST_BOT:
       canActivatePowerupFlag = IsAlive() && !contestingBot;
       break;
+    case PowerupType.EMP:
+      canActivatePowerupFlag = IsAlive();
+      break;
   }
 }
 
@@ -203,6 +206,9 @@ void UseCurrentPower() "[SUB] Dispatcher for powerup use event"
       break;
     case PowerupType.CONTEST_BOT:
       async! useContestabot();
+      break;
+    case PowerupType.EMP:
+      useEMP();
       break;
   }
   # Break early if we didn't use the powerup
@@ -312,6 +318,7 @@ void incrementPowerupIndex() "[SUB] Find next valid powerupIndex in the positive
 // import "powerups/speedBoost.ostw";
 import "powerups/contestabot.ostw";
 import "powerups/deathlocator.ostw";
+import "powerups/emp.ostw";
 import "powerups/giant.ostw";
 import "powerups/invisibility.ostw";
 import "powerups/shrinking.ostw";

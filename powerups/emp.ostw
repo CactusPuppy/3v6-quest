@@ -1,0 +1,33 @@
+import "../main.ostw";
+void useEMP() "[SUB] EMP effects"
+{
+  ApplyImpulse(EventPlayer(), Up(), 6, Relative.ToWorld, ContraryMotion.Cancel);
+  PlayEffect(
+    AllPlayers(),
+    PlayEffect.SombraTranslocatorDisappearEffect,
+    <Color>TeamOf(),
+    EventPlayer(),
+    1
+  );
+  Wait(0.35);
+  PlayEffect(
+    AllPlayers(),
+    PlayEffect.SombraEmpExplosioneffect,
+    <Color>TeamOf(),
+    EyePosition(),
+    1
+  );
+  PlayEffect(
+    AllPlayers(),
+    PlayEffect.SombraEmpExplosionSound,
+    <Color>TeamOf(),
+    EyePosition(),
+    200
+  );
+  SetStatus(
+    PlayersWithinRadius(EyePosition(), 15, OppositeTeamOf(TeamOf()), RadiusLOS.Surfaces),
+    EventPlayer(),
+    Status.Hacked,
+    5
+  );
+}
