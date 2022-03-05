@@ -1,0 +1,50 @@
+import "main.ostw";
+
+rule: "Base inventory for all powered up players" -0.5
+Event.OngoingPlayer
+if (TeamOf() == PowerupTeam)
+{
+  powerupInventory = [
+    WorkshopSettingInteger("Starter Inventory", "Invisibility Dust Bags", 0, 0, 20),
+    WorkshopSettingInteger("Starter Inventory", "Shrinking Tablets",      0, 0, 20),
+    WorkshopSettingInteger("Starter Inventory", "Giant Juice Vials",      0, 0, 20),
+    WorkshopSettingInteger("Starter Inventory", "Mass Root Vine Charges", 0, 0, 20),
+    WorkshopSettingInteger("Starter Inventory", "Deathlocators",          20, 0, 20),
+    WorkshopSettingInteger("Starter Inventory", "E.M.P. Batteries",       0, 0, 20),
+    WorkshopSettingInteger("Starter Inventory", "Contest Bot Whistles",   0, 0, 20)
+  ];
+  PlayerSpecificInventory();
+}
+
+void PlayerSpecificInventory() "[SUB]: Player-specific inventory setup"
+{
+  switch(SlotOf()) {
+    case 0:
+      powerupInventory[PowerupType.INVISIBILITY] += WorkshopSettingInteger("Player 1 Additional Inventory", "Player 1 Additional Invisibility Dust Bags", 0, 0, 20);
+      powerupInventory[PowerupType.SHRINKING] +=    WorkshopSettingInteger("Player 1 Additional Inventory", "Player 1 Additional Shrinking Tablets",      0, 0, 20);
+      powerupInventory[PowerupType.ENLARGENING] +=  WorkshopSettingInteger("Player 1 Additional Inventory", "Player 1 Additional Giant Juice Vials",      0, 0, 20);
+      powerupInventory[PowerupType.MASS_ROOT] +=    WorkshopSettingInteger("Player 1 Additional Inventory", "Player 1 Additional Mass Root Vine Charges", 0, 0, 20);
+      powerupInventory[PowerupType.DEATHLOCATOR] += WorkshopSettingInteger("Player 1 Additional Inventory", "Player 1 Additional Deathlocators",          0, 0, 20);
+      powerupInventory[PowerupType.EMP] +=          WorkshopSettingInteger("Player 1 Additional Inventory", "Player 1 Additional E.M.P. Batteries",       0, 0, 20);
+      powerupInventory[PowerupType.CONTEST_BOT] +=  WorkshopSettingInteger("Player 1 Additional Inventory", "Player 1 Additional Contest Bot Whistles",   0, 0, 20);
+      break;
+    case 1:
+      powerupInventory[PowerupType.INVISIBILITY] += WorkshopSettingInteger("Player 2 Additional Inventory", "Player 2 Additional Invisibility Dust Bags", 0, 0, 20);
+      powerupInventory[PowerupType.SHRINKING] +=    WorkshopSettingInteger("Player 2 Additional Inventory", "Player 2 Additional Shrinking Tablets",      0, 0, 20);
+      powerupInventory[PowerupType.ENLARGENING] +=  WorkshopSettingInteger("Player 2 Additional Inventory", "Player 2 Additional Giant Juice Vials",      0, 0, 20);
+      powerupInventory[PowerupType.MASS_ROOT] +=    WorkshopSettingInteger("Player 2 Additional Inventory", "Player 2 Additional Mass Root Vine Charges", 0, 0, 20);
+      powerupInventory[PowerupType.DEATHLOCATOR] += WorkshopSettingInteger("Player 2 Additional Inventory", "Player 2 Additional Deathlocators",          0, 0, 20);
+      powerupInventory[PowerupType.EMP] +=          WorkshopSettingInteger("Player 2 Additional Inventory", "Player 2 Additional E.M.P. Batteries",       0, 0, 20);
+      powerupInventory[PowerupType.CONTEST_BOT] +=  WorkshopSettingInteger("Player 2 Additional Inventory", "Player 2 Additional Contest Bot Whistles",   0, 0, 20);
+      break;
+    case 2:
+      powerupInventory[PowerupType.INVISIBILITY] += WorkshopSettingInteger("Player 3 Additional Inventory", "Player 3 Additional Invisibility Dust Bags", 0, 0, 20);
+      powerupInventory[PowerupType.SHRINKING] +=    WorkshopSettingInteger("Player 3 Additional Inventory", "Player 3 Additional Shrinking Tablets",      0, 0, 20);
+      powerupInventory[PowerupType.ENLARGENING] +=  WorkshopSettingInteger("Player 3 Additional Inventory", "Player 3 Additional Giant Juice Vials",      0, 0, 20);
+      powerupInventory[PowerupType.MASS_ROOT] += WorkshopSettingInteger("Player 3 Additional Inventory", "Player 3 Additional Mass Root Vine Charges", 0, 0, 20);
+      powerupInventory[PowerupType.DEATHLOCATOR] += WorkshopSettingInteger("Player 3 Additional Inventory", "Player 3 Additional Deathlocators",          0, 0, 20);
+      powerupInventory[PowerupType.EMP] += WorkshopSettingInteger("Player 3 Additional Inventory", "Player 3 Additional E.M.P. Batteries",       0, 0, 20);
+      powerupInventory[PowerupType.CONTEST_BOT] += WorkshopSettingInteger("Player 3 Additional Inventory", "Player 3 Additional Contest Bot Whistles",   0, 0, 20);
+      break;
+  }
+}
