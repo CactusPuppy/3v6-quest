@@ -1,4 +1,32 @@
 import "customGameSettings.lobby";
+
+enum PowerupType {
+  INVISIBILITY, // 0
+  SHRINKING, // 1
+  ENLARGENING, // 2
+  MASS_ROOT, // 3
+  DEATHLOCATOR, // 4
+  EMP, // 5
+  CONTEST_BOT // 6
+}
+// ABILITY NAME                                                                        ITEM COLOR                            ITEM DESCRIPTION
+globalvar Any[][] powerupData = [
+  [<"<0> Invisibility Dust", IconString(Icon.Eye)>,                                    CustomColor( 47, 181, 234, 255),   "The ground-up dust of Sombra's old cloaking devices. Tastes like grapes.\nTemporarily renders the user invisible to enemies. Dissipates upon taking or dealing damage." ],
+  [<"<0> Shrinking Tablet", AbilityIconString(Hero.WreckingBall, Button.Crouch)>,      CustomColor(170, 120, 230, 255),   "This hard-light tablet looks suspiciously stone-like.\nTemporarily decreases the user's size." ],
+  [<"<0> Giant Juice", AbilityIconString(Hero.Baptiste, Button.Crouch)>,               CustomColor(159,  43,  43, 255),   "Winston extracted some of his blood to give to you. Don't think too much about it.\nTemporarily increases the user's size and health." ],
+  [<"<0> Tree Roots", IconString(Icon.Dizzy)>,                                         CustomColor( 79, 193,  49, 255),   "Moira's vines grow surprisingly quickly.\nTemporarily restrains all enemies within a certain distance of the user." ],
+  [<"<0> Deathlocator", IconString(Icon.Skull)>,                                       CustomColor(235, 224,  47, 255),   "Heroes never die... for a price. Deathlocators starting at $499.\nOnce placed, will instantly respawn its owner at its location upon death."],
+  [<"<0> E.M.P.", AbilityIconString(Hero.Sombra, Button.Ultimate)>,                    CustomColor(161,  73, 197, 255),   "Sombra let you borrow her EMP device. Don't lose it!\nTemporarily hacks all enemies within a certain distance of the user."],
+  [<"<0> Contestabot", AbilityIconString(Hero.Ashe, Button.Ultimate)>,                 CustomColor(127, 127, 127, 255),   "Where does B.O.B. go when he's not deployed anyways?\nContests or progresses the objective for a period of time."]
+];
+enum PowerupDataKey {
+  Name,
+  Color,
+  Description
+}
+struct PowerupData {
+  // REFACTOR
+}
 enum TalentType {
   MOVE_SPEED, // 0
   MAX_HEALTH, // 1
@@ -75,19 +103,7 @@ struct TalentData {
 
 globalvar Team PowerupTeam;
 
-playervar Number[] powerupInventory = [
-  WorkshopSettingInteger("Starter Inventory", "Full Health Potions",    0, 0, 20),
-  WorkshopSettingInteger("Starter Inventory", "Immortality Potions",    0, 0, 20),
-  WorkshopSettingInteger("Starter Inventory", "Self-Resurrect Totems",  0, 0, 20),
-  WorkshopSettingInteger("Starter Inventory", "Damage Boost Stims",     0, 0, 20),
-  WorkshopSettingInteger("Starter Inventory", "Speed Boost Stims",      0, 0, 20),
-  WorkshopSettingInteger("Starter Inventory", "Invisibility Dust Bags", 0, 0, 20),
-  WorkshopSettingInteger("Starter Inventory", "Shrinking Tablets",      0, 0, 20),
-  WorkshopSettingInteger("Starter Inventory", "Giant Juice Vials",      0, 0, 20),
-  WorkshopSettingInteger("Starter Inventory", "Cooldown Hasteners",     0, 0, 20),
-  WorkshopSettingInteger("Starter Inventory", "Smoke Bombs",            0, 0, 20),
-  WorkshopSettingInteger("Starter Inventory", "Insta-Ult Packs",        0, 0, 20)
-];
+playervar Number[] powerupInventory;
 playervar Number powerupIndex;
 playervar Boolean canActivatePowerupFlag = false;
 playervar String lastPowerupName;
@@ -101,22 +117,19 @@ playervar Number[] talentBaseStats = [
   100,    // Ultimate Generation
   100     // Damage Receieved
 ];
-enum PowerupDataKey {
-  Name,
-  Price,
-  Color
-}
 
 rule: "Ensure these settings appear first in the Workshop Settings menu" -1
 {
-  initialCredits = WorkshopSettingInteger("Settings", "Initial Credits Balance", 300, 0, 1000, 0);
   PowerupTeam = [Team.Team1, Team.Team2][WorkshopSettingCombo("Settings", "Powerups Team", 0, ["Team 1", "Team 2"], 0)];
 }
+
+import "playerSetup.ostw";
 
 rule: 'Interact to use Powerup'
 Event.OngoingPlayer
 if (TeamOf(EventPlayer()) == PowerupTeam)
 if (IsButtonHeld(Button: Button.Interact))
+if (IsTrueForAny(powerupInventory, ArrayElement()))
 {
   CheckUse();
   if (!canActivatePowerupFlag) {
@@ -138,36 +151,12 @@ void CheckUse() "[SUB] Can player use the currently selected powerup?"
   # Cannot use by default
   canActivatePowerupFlag = false;
   switch(powerupIndex) {
-    case PowerupType.FULL_HEALTH:
-      canActivatePowerupFlag = IsAlive(EventPlayer()) && Health(EventPlayer()) < MaxHealth(EventPlayer());
-      break;
-    case PowerupType.IMMORTALITY:
-      canActivatePowerupFlag = IsAlive(EventPlayer()) && immortalityTimer == 0;
-      break;
-    case PowerupType.SELF_RES:
-      canActivatePowerupFlag = IsDead(EventPlayer());
-      break;
-    case PowerupType.DAMAGE_BOOST:
-      canActivatePowerupFlag = IsAlive(EventPlayer()) && (canStackDamageBoosts || CountOf(damageBoostExpiryTimes) == 0);
-      break;
-    case PowerupType.SPEED_BOOST:
-      canActivatePowerupFlag = IsAlive(EventPlayer()) && (canStackSpeedBoosts || CountOf(speedBoostExpiryTimes) == 0);
-      break;
     case PowerupType.INVISIBILITY:
       canActivatePowerupFlag = IsAlive(EventPlayer()) && invisibilityTimer == 0;
       break;
     case PowerupType.SHRINKING:
     case PowerupType.ENLARGENING:
-      canActivatePowerupFlag = IsAlive(EventPlayer()) && shrinkTimer == 0 && giantTimer == 0;
-      break;
-    case PowerupType.COOLDOWN_HASTE:
-      canActivatePowerupFlag = IsAlive(EventPlayer()) && cooldownHasteTimer == 0;
-      break;
-    case PowerupType.BLINDNESS:
-      canActivatePowerupFlag = IsAlive(EventPlayer());
-      break;
-    case PowerupType.INSTA_ULT:
-      canActivatePowerupFlag = IsAlive(EventPlayer()) && UltimateChargePercent(EventPlayer()) < 100;
+      canActivatePowerupFlag = IsAlive() && shrinkTimer == 0 && giantTimer == 0;
       break;
   }
 }
@@ -175,21 +164,6 @@ void CheckUse() "[SUB] Can player use the currently selected powerup?"
 void UseCurrentPower() "[SUB] Dispatcher for powerup use event"
 {
   switch(powerupIndex) {
-    case PowerupType.FULL_HEALTH:
-      async useFullRestore();
-      break;
-    case PowerupType.IMMORTALITY:
-      useImmortality();
-      break;
-    case PowerupType.SELF_RES:
-      resSelf();
-      break;
-    case PowerupType.DAMAGE_BOOST:
-      useDamageBooster();
-      break;
-    case PowerupType.SPEED_BOOST:
-      useSpeedBooster();
-      break;
     case PowerupType.INVISIBILITY:
       useInvisibility();
       break;
@@ -199,14 +173,6 @@ void UseCurrentPower() "[SUB] Dispatcher for powerup use event"
     case PowerupType.ENLARGENING:
       useGiant();
       break;
-    case PowerupType.COOLDOWN_HASTE:
-      useCooldownHaste();
-      break;
-    case PowerupType.BLINDNESS:
-      useSmokeBomb();
-      break;
-    case PowerupType.INSTA_ULT:
-      useInstaUlt();
       break;
   }
   # Decrement inventory of powerups
@@ -224,10 +190,9 @@ void UseCurrentPower() "[SUB] Dispatcher for powerup use event"
   }
 }
 
-rule: "Initialize player HUD"
+rule: "Initialize player HUD" 2000
 Event.OngoingPlayer
 if (TeamOf(EventPlayer()) == PowerupTeam)
-if (!IsWaitingForPlayers())
 {
   CreateHudText(
     VisibleTo:          EventPlayer(),
@@ -251,6 +216,7 @@ if (!IsWaitingForPlayers())
   if (IsTrueForAll(powerupInventory, ArrayElement() == 0)) {
     inventoryIsEmpty = true;
   }
+  incrementPowerupIndex();
 }
 
 rule: "Scroll forward and back between usable items"
@@ -306,17 +272,17 @@ void incrementPowerupIndex() "[SUB] Find next valid powerupIndex in the positive
   powerupIndex = explorePowerupIndex;
 }
 
-import "powerups/fullRestore.ostw";
-import "powerups/immortality.ostw";
-import "powerups/selfRes.ostw";
-import "powerups/damageBoost.ostw";
-import "powerups/speedBoost.ostw";
+// import "powerups/fullRestore.ostw";
+// import "powerups/immortality.ostw";
+// import "powerups/selfRes.ostw";
+// import "powerups/damageBoost.ostw";
+// import "powerups/speedBoost.ostw";
+import "powerups/giant.ostw";
 import "powerups/invisibility.ostw";
 import "powerups/shrinking.ostw";
-import "powerups/giant.ostw";
-import "powerups/cooldownHaste.ostw";
-import "powerups/smokeBomb.ostw";
-import "powerups/instaUlt.ostw";
+// import "powerups/cooldownHaste.ostw";
+// import "powerups/smokeBomb.ostw";
+// import "powerups/instaUlt.ostw";
 
 import "talents/cooldown.ostw";
 import "talents/damageDealt.ostw";
