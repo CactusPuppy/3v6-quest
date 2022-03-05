@@ -1,0 +1,17 @@
+import "../main.ostw";
+rule: "[MOVE SPEED] Set up damage received talent"
+Event.OngoingPlayer
+if (TeamOf() == PowerupTeam)
+{
+  switch (SlotOf()) {
+    case 0:
+      SetDamageReceived(EventPlayer(), WorkshopSettingInteger("Player 1 Talents", "Player 1 Damage Received", 100, 100, 500));
+      break;
+    case 1:
+      SetDamageReceived(EventPlayer(), WorkshopSettingInteger("Player 2 Talents", "Player 2 Damage Received", 100, 100, 500));
+      break;
+    case 2:
+      SetDamageReceived(EventPlayer(), WorkshopSettingInteger("Player 3 Talents", "Player 3 Damage Received", 100, 100, 500));
+      break;
+  }
+}

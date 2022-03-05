@@ -1,0 +1,17 @@
+import "../main.ostw";
+rule: "[MOVE SPEED] Set up move speed talent"
+Event.OngoingPlayer
+if (TeamOf() == PowerupTeam)
+{
+  switch (SlotOf()) {
+    case 0:
+      SetMoveSpeed(EventPlayer(), WorkshopSettingReal("Player 1 Talents", "Player 1 Move Speed", 100, 100, 500));
+      break;
+    case 1:
+      SetMoveSpeed(EventPlayer(), WorkshopSettingReal("Player 2 Talents", "Player 2 Move Speed", 100, 100, 500));
+      break;
+    case 2:
+      SetMoveSpeed(EventPlayer(), WorkshopSettingReal("Player 3 Talents", "Player 3 Move Speed", 100, 100, 500));
+      break;
+  }
+}

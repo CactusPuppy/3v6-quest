@@ -1,0 +1,101 @@
+import "../main.ostw";
+
+Number COOLDOWN_UPDATE_PERIOD: 0.1;
+// Jump, Reload, Interact, and Melee not included because no hero
+// currently has a cooldown ability associated with those buttons
+// enum AbilityButtons {
+//   PrimaryFire,
+//   SecondaryFire,
+//   Ability1,
+//   Ability2,
+//   Crouch
+// }
+
+// playervar Number[] finalSegmentCache;
+
+rule: "Set base cooldown stats"
+Event.OngoingPlayer
+if (TeamOf() == PowerupTeam)
+{
+  switch (SlotOf()) {
+    case 0:
+      talentBaseStats[TalentType.COOLDOWN] = WorkshopSettingInteger("Player 1 Talents", "Player 1 Cooldown Rate %", 100, 100, 1000);
+      break;
+    case 1:
+      talentBaseStats[TalentType.COOLDOWN] = WorkshopSettingInteger("Player 2 Talents", "Player 2 Cooldown Rate %", 100, 100, 1000);
+      break;
+    case 2:
+      talentBaseStats[TalentType.COOLDOWN] = WorkshopSettingInteger("Player 3 Talents", "Player 3 Cooldown Rate %", 100, 100, 1000);
+      break;
+  }
+}
+
+rule: "[COOLDOWN TALENT] Speed up Primary Fire cooldown"
+Event.OngoingPlayer
+if (talentBaseStats[TalentType.COOLDOWN] > 100)
+if (AbilityCooldown(Button: Button.PrimaryFire) > 0)
+{
+   Wait(COOLDOWN_UPDATE_PERIOD, WaitBehavior.AbortWhenFalse);
+  SetAbilityCooldown(
+    Player:             EventPlayer(),
+    Button:             Button.PrimaryFire,
+    Cooldown:           AbilityCooldown(Button: Button.PrimaryFire) - COOLDOWN_UPDATE_PERIOD * (talentBaseStats[TalentType.COOLDOWN]/100 - 1)
+  );
+  LoopIfConditionIsTrue();
+}
+
+rule: "[COOLDOWN TALENT] Speed up Secondary Fire cooldown"
+Event.OngoingPlayer
+if (talentBaseStats[TalentType.COOLDOWN] > 100)
+if (AbilityCooldown(Button: Button.SecondaryFire) > 0)
+{
+   Wait(COOLDOWN_UPDATE_PERIOD, WaitBehavior.AbortWhenFalse);
+  SetAbilityCooldown(
+    Player:             EventPlayer(),
+    Button:             Button.SecondaryFire,
+    Cooldown:           AbilityCooldown(Button: Button.SecondaryFire) - COOLDOWN_UPDATE_PERIOD * (talentBaseStats[TalentType.COOLDOWN]/100 - 1)
+  );
+  LoopIfConditionIsTrue();
+}
+
+rule: "[COOLDOWN TALENT] Speed up Ability 1 cooldown"
+Event.OngoingPlayer
+if (talentBaseStats[TalentType.COOLDOWN] > 100)
+if (AbilityCooldown(Button: Button.Ability1) > 0)
+{
+   Wait(COOLDOWN_UPDATE_PERIOD, WaitBehavior.AbortWhenFalse);
+  SetAbilityCooldown(
+    Player:             EventPlayer(),
+    Button:             Button.Ability1,
+    Cooldown:           AbilityCooldown(Button: Button.Ability1) - COOLDOWN_UPDATE_PERIOD * (talentBaseStats[TalentType.COOLDOWN]/100 - 1)
+  );
+  LoopIfConditionIsTrue();
+}
+
+rule: "[COOLDOWN TALENT] Speed up Ability 2 cooldown"
+Event.OngoingPlayer
+if (talentBaseStats[TalentType.COOLDOWN] > 100)
+if (AbilityCooldown(Button: Button.Ability2) > 0)
+{
+   Wait(COOLDOWN_UPDATE_PERIOD, WaitBehavior.AbortWhenFalse);
+  SetAbilityCooldown(
+    Player:             EventPlayer(),
+    Button:             Button.Ability2,
+    Cooldown:           AbilityCooldown(Button: Button.Ability2) - COOLDOWN_UPDATE_PERIOD * (talentBaseStats[TalentType.COOLDOWN]/100 - 1)
+  );
+  LoopIfConditionIsTrue();
+}
+
+rule: "[COOLDOWN TALENT] Speed up Crouch cooldown"
+Event.OngoingPlayer
+if (talentBaseStats[TalentType.COOLDOWN] > 100)
+if (AbilityCooldown(Button: Button.Crouch) > 0)
+{
+   Wait(COOLDOWN_UPDATE_PERIOD, WaitBehavior.AbortWhenFalse);
+  SetAbilityCooldown(
+    Player:             EventPlayer(),
+    Button:             Button.Crouch,
+    Cooldown:           AbilityCooldown(Button: Button.Crouch) - COOLDOWN_UPDATE_PERIOD * (talentBaseStats[TalentType.COOLDOWN]/100 - 1)
+  );
+  LoopIfConditionIsTrue();
+}

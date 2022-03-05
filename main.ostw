@@ -1,5 +1,77 @@
 import "customGameSettings.lobby";
-import "interface/purchaseInterface.ostw";
+enum TalentType {
+  MOVE_SPEED, // 0
+  MAX_HEALTH, // 1
+  DAMAGE_DEALT, // 2
+  COOLDOWN, // 3
+  ULTIMATE_GENERATION, // 4
+  DAMAGE_RECEIVED // 5
+}
+Number numOfPowerups: talentData.Length;
+globalvar TalentData[] talentData = [
+  {
+    Name: "Move Speed",
+    // Price: WorkshopSettingInteger("Talent Prices", "Move Speed Price", 10, 0, 100, 100),
+    Price: 0,
+    Color: CustomColor(132, 204, 101, 255),
+    Description: "+<X>% to base movement speed",
+    BonusAmount: WorkshopSettingInteger("Move Speed Talent", "Move Speed % Bonus", 20, 0, 100, 0),
+    MaxStacks: WorkshopSettingInteger("Move Speed Talent", "Move Speed Max Stacks", 5, 1, 10, 1),
+  },
+  {
+    Name: "Max Health",
+    // Price: WorkshopSettingInteger("Talent Prices", "Max Health Price", 10, 0, 100, 101),
+    Price: 0,
+    Color: CustomColor(230, 81,  81,  255),
+    Description: "+<X>% to base max health",
+    BonusAmount: WorkshopSettingInteger("Max Health Talent", "Max Health % Bonus", 20, 0, 100, 0),
+    MaxStacks: WorkshopSettingInteger("Max Health Talent", "Max Health Max Stacks", 5, 1, 10, 1),
+  },
+  {
+    Name: "Damage Dealt",
+    // Price: WorkshopSettingInteger("Talent Prices", "Damage Dealt Price", 10, 0, 100, 101),
+    Price: 0,
+    Color: CustomColor(169, 255, 252, 255),
+    Description: "+<X>% to base damage",
+    BonusAmount: WorkshopSettingInteger("Damage Dealt Talent", "Damage Dealt % Bonus", 20, 0, 100, 0),
+    MaxStacks: WorkshopSettingInteger("Damage Dealt Talent", "Damage Dealt Max Stacks", 5, 1, 10, 1),
+  },
+  {
+    Name: "Cooldown Speed",
+    // Price: WorkshopSettingInteger("Talent Prices", "Cooldown Speed Price", 10, 0, 100, 101),
+    Price: 0,
+    Color: CustomColor(239, 241, 93, 255),
+    Description: "+<X>% faster cooldowns",
+    BonusAmount: WorkshopSettingInteger("Cooldown Speed Talent", "Cooldown Speed % Bonus", 10, 0, 100, 0),
+    MaxStacks: WorkshopSettingInteger("Cooldown Speed Talent", "Cooldown Speed Max Stacks", 5, 1, 10, 1),
+  },
+  {
+    Name: "Ultimate Generation",
+    // Price: WorkshopSettingInteger("Talent Prices", "Ultimate Generation Price", 10, 0, 100, 101),
+    Price: 0,
+    Color: CustomColor(255, 196, 40,  255),
+    Description: "+<X>% faster ultimate generation",
+    BonusAmount: WorkshopSettingInteger("Ultimate Generation Talent", "Ultimate Generation % Bonus", 10, 0, 100, 0),
+    MaxStacks: WorkshopSettingInteger("Ultimate Generation Talent", "Ultimate Generation Max Stacks", 5, 1, 10, 1),
+  },
+  {
+    Name: "Damage Received",
+    // Price: WorkshopSettingInteger("Talent Prices", "Damage Received Price", 10, 0, 100, 101),
+    Price: 0,
+    Color: CustomColor(252, 175, 203, 255),
+    Description: "+<X>% less damage taken",
+    BonusAmount: WorkshopSettingInteger("Damage Received Talent", "Damage Received % Bonus", 10, 0, 100, 0),
+    MaxStacks: WorkshopSettingInteger("Damage Received Talent", "Damage Received Max Stacks", 5, 1, 10, 1),
+  }
+];
+struct TalentData {
+  public String Name;
+  public Number Price;
+  public Color Color;
+  public String Description;
+  public Number BonusAmount;
+  public Number MaxStacks;
+}
 
 globalvar Team PowerupTeam;
 
@@ -21,36 +93,13 @@ playervar Boolean canActivatePowerupFlag = false;
 playervar String lastPowerupName;
 playervar Boolean inventoryIsEmpty; // Caches inventory status
 playervar Any transformEffect;
-playervar Number baseMoveSpeed = 100;
-playervar Number baseMaxHealth = 100;
-playervar Number baseDamageDealt = 100;
-
-enum PowerupType {
-  FULL_HEALTH,
-  IMMORTALITY,
-  SELF_RES,
-  DAMAGE_BOOST,
-  SPEED_BOOST,
-  INVISIBILITY,
-  SHRINKING,
-  ENLARGENING,
-  COOLDOWN_HASTE,
-  BLINDNESS,
-  INSTA_ULT
-}
-// ABILITY NAME                                                                        ITEM PRICE                                                                     ITEM COLOR
-globalvar Any[][] powerupData = [
-  [<"<0> Full Health Potion", AbilityIconString(Hero.Baptiste, Button.Ability1)>,      WorkshopSettingInteger("Item Prices", "Full Health Potion",   20, 0, 100),    CustomColor(230, 81,  81,  255) ],
-  [<"<0> Immortality Potion", AbilityIconString(Hero.Baptiste, Button.Ability2)>,      WorkshopSettingInteger("Item Prices", "Immortality Potion",   30, 0, 100),    CustomColor(123, 255, 200, 255) ],
-  [<"<0> Self-Resurrect Totem", AbilityIconString(Hero.Mercy, Button.Ability2)>,       WorkshopSettingInteger("Item Prices", "Self-Resurrect Totem", 70, 0, 100),    CustomColor(255, 236, 127, 255) ],
-  [<"<0> Damage Boost Stim", AbilityIconString(Hero.Ana, Button.Ultimate)>,            WorkshopSettingInteger("Item Prices", "Damage Boost Stim",    10, 0, 100),    CustomColor(169, 255, 252, 255) ],
-  [<"<0> Speed Boost Stim", AbilityIconString(Hero.Reinhardt, Button.Ability1)>,       WorkshopSettingInteger("Item Prices", "Speed Boost Stim",     10, 0, 100),    CustomColor(132, 204, 101, 255) ],
-  [<"<0> Invisibility Dust", IconString(Icon.Eye)>,                                    WorkshopSettingInteger("Item Prices", "Invisibility Dust",    25, 0, 100),    CustomColor(102, 95,  231, 255) ],
-  [<"<0> Shrinking Tablet", AbilityIconString(Hero.WreckingBall, Button.Crouch)>,      WorkshopSettingInteger("Item Prices", "Shrinking Tablet",     10, 0, 100),    CustomColor(170, 120, 230, 255) ],
-  [<"<0> Giant Juice", AbilityIconString(Hero.Baptiste, Button.Crouch)>,               WorkshopSettingInteger("Item Prices", "Giant Juice",          10, 0, 100),    CustomColor(159, 43,  43,  255) ],
-  [<"<0> Cooldown Hastener", AbilityIconString(Hero.Lucio, Button.Ability2)>,          WorkshopSettingInteger("Item Prices", "Cooldown Hastener",    10, 0, 100),    CustomColor(252, 175, 203, 255) ],
-  [<"<0> Smoke Bomb", IconString(Icon.Dizzy)>,                                         WorkshopSettingInteger("Item Prices", "Smoke Bomb",           10, 0, 100),    CustomColor(200, 200, 200, 255) ],
-  [<"<0> Insta-Ult Pack", AbilityIconString(Hero.Torbjorn, Button.Ability2)>,          WorkshopSettingInteger("Item Prices", "Insta-Ult Pack",       10, 0, 100),    CustomColor(255, 196, 40,  255) ]
+playervar Number[] talentBaseStats = [
+  100,    // Move Speed
+  100,    // Max Health
+  100,    // Damage Dealt
+  100,    // Cooldown
+  100,    // Ultimate Generation
+  100     // Damage Receieved
 ];
 enum PowerupDataKey {
   Name,
@@ -268,5 +317,12 @@ import "powerups/giant.ostw";
 import "powerups/cooldownHaste.ostw";
 import "powerups/smokeBomb.ostw";
 import "powerups/instaUlt.ostw";
+
+import "talents/cooldown.ostw";
+import "talents/damageDealt.ostw";
+import "talents/damageReceived.ostw";
+import "talents/moveSpeed.ostw";
+import "talents/maxHealth.ostw";
+import "talents/ultimateGeneration.ostw";
 
 // import "debug.ostw";

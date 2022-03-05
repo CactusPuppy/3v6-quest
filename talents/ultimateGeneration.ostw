@@ -1,0 +1,19 @@
+import "../main.ostw";
+// globalvar Number[] UltimateCosts = [2100, 1260, 1820, 1680, 2142, 1540, 2100, 1540, 1540, 2310, 1680, 2310, 1932, 1800, 1680, 1925, 2100, 2310, 2940, 1540, 1610, 1400, 1680, 2100, 1680, 2800, 2380, 1540, 2240, 1960, 2310, 1960];
+
+playervar Number cachedUltPercent;
+
+rule: "On ult charge percent rollover, subtly bump ult charge"
+Event.OngoingPlayer
+if (TeamOf() == PowerupTeam)
+if (talentBaseStats[TalentType.ULTIMATE_GENERATION] > 100)
+if (cachedUltPercent != UltimateChargePercent())
+{
+  SetUltimateCharge(EventPlayer(), AbsoluteValue(
+    UltimateChargePercent()
+    + (talentBaseStats[TalentType.ULTIMATE_GENERATION] / 100 - 1) * (UltimateChargePercent() - cachedUltPercent)
+  ));
+  cachedUltPercent = UltimateChargePercent();
+  MinWait();
+  LoopIfConditionIsTrue();
+}
