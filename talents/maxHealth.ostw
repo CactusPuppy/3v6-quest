@@ -14,7 +14,6 @@ if (TeamOf() == PowerupTeam)
       talentBaseStats[TalentType.MAX_HEALTH] = WorkshopSettingInteger("Player 3 Talents", "Player 3 Max Health", 100, 100, 500);
       break;
   }
-  # Avoid dumb rounding errors as best we can
-  // AbortIf(talentBaseStats[TalentType.MAX_HEALTH] == 100);
+  # Add small delta to avoid rounding errors
   SetMaxHealth(EventPlayer(), talentBaseStats[TalentType.MAX_HEALTH] + 0.001);
 }
