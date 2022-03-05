@@ -125,6 +125,7 @@ rule: "Ensure these settings appear first in the Workshop Settings menu" -1
 
 import "playerSetup.ostw";
 
+playervar Boolean powerupWasNotConsumed;
 rule: 'Interact to use Powerup'
 Event.OngoingPlayer
 if (TeamOf(EventPlayer()) == PowerupTeam)
@@ -158,11 +159,15 @@ void CheckUse() "[SUB] Can player use the currently selected powerup?"
     case PowerupType.ENLARGENING:
       canActivatePowerupFlag = IsAlive() && shrinkTimer == 0 && giantTimer == 0;
       break;
+    case PowerupType.DEATHLOCATOR:
+      canActivatePowerupFlag = IsAlive() && AltitudeOf() < 1;
   }
 }
 
 void UseCurrentPower() "[SUB] Dispatcher for powerup use event"
 {
+  # By default we assume powerup was used
+  powerupWasNotConsumed = false;
   switch(powerupIndex) {
     case PowerupType.INVISIBILITY:
       useInvisibility();
@@ -173,8 +178,12 @@ void UseCurrentPower() "[SUB] Dispatcher for powerup use event"
     case PowerupType.ENLARGENING:
       useGiant();
       break;
+    case PowerupType.DEATHLOCATOR:
+      useDeathlocator();
       break;
   }
+  # Break early if we didn't use the powerup
+  AbortIf(powerupWasNotConsumed);
   # Decrement inventory of powerups
   powerupInventory[powerupIndex] -= 1;
   # Confirm use (cache name to avoid deferment issues)
@@ -277,6 +286,7 @@ void incrementPowerupIndex() "[SUB] Find next valid powerupIndex in the positive
 // import "powerups/selfRes.ostw";
 // import "powerups/damageBoost.ostw";
 // import "powerups/speedBoost.ostw";
+import "powerups/deathlocator.ostw";
 import "powerups/giant.ostw";
 import "powerups/invisibility.ostw";
 import "powerups/shrinking.ostw";

@@ -1,0 +1,99 @@
+import "../main.ostw";
+playervar Vector deathlocatorPosition = null;
+playervar Vector deathlocatorFacing = null;
+playervar Number cameraWaitTime;
+playervar Any deathlocatorEffect;
+
+void useDeathlocator() "[SUB] Deathlocator effects (BLOCKS)"
+{
+  if (deathlocatorPosition != null) {
+    SmallMessage(EventPlayer(), <"You already have a deathlocator active!">);
+    SmallMessage(EventPlayer(), <"Press again to confirm you want to place a new deathlocator.">);
+    WaitUntil(!IsButtonHeld(Button: Button.Interact), 9999);
+    WaitUntil(
+      IsButtonHeld(Button: Button.Interact)
+      || powerupIndex != PowerupType.DEATHLOCATOR
+      || deathlocatorPosition == null, 2);
+    if (!IsButtonHeld(Button: Button.Interact)) {
+      powerupWasNotConsumed = true;
+      return;
+    }
+    if (EntityExists(deathlocatorEffect)) DestroyEffect(deathlocatorEffect);
+    PlayEffect(AllPlayers(), PlayEffect.BadExplosion, Color.Yellow, deathlocatorPosition, 0.5);
+  }
+  deathlocatorPosition = PositionOf();
+  deathlocatorFacing = FacingDirectionOf();
+  PlayEffect(
+    VisibleTo:      AllPlayers(),
+    Type:           PlayEffect.BrigitteRepairPackImpactEffect,
+    Color:          <Color>TeamOf(),
+    Position:       deathlocatorPosition,
+    Radius:         200
+  );
+  PlayEffect(
+    VisibleTo:      AllPlayers(),
+    Type:           PlayEffect.BrigitteWhipShotHealAreaSound,
+    Color:          <Color>TeamOf(),
+    Position:       deathlocatorPosition,
+    Radius:         200
+  );
+  deathlocatorEffect = CreateEffect(
+    VisibleTo:      AllPlayers(),
+    Type:           Effect.Sphere,
+    Color:          Color.Yellow,
+    Position:       deathlocatorPosition,
+    Radius:         0.1
+  );
+}
+
+rule: "[DEATHLOCATOR] On death, activate deathlocator if able"
+Event.OnDeath
+if (deathlocatorPosition != null)
+{
+  PlayEffect(
+    VisibleTo:      AllPlayers(),
+    Type:           PlayEffect.TracerRecallDisappearEffect,
+    Color:          <Color>TeamOf(),
+    Position:       PositionOf(EventPlayer()) + Up(),
+    Radius:         2
+  );
+  PlayEffect(
+    VisibleTo:      AllPlayers(),
+    Type:           PlayEffect.TracerRecallDisappearSound,
+    Color:          <Color>TeamOf(),
+    Position:       PositionOf(EventPlayer()),
+    Radius:         200
+  );
+  if (EventWasEnvironment()) {
+    Teleport(EventPlayer(), NearestWalkablePosition(PositionOf(EventPlayer())));
+      MinWait();
+  }
+  Resurrect();
+  SetStatus(EventPlayer(), null, Status.PhasedOut, 10);
+  SetInvisible(EventPlayer(), InvisibleTo.All);
+  Wait(0.1);
+  StartCamera(EventPlayer(), EyePosition(), EyePosition() + FacingDirectionOf(), 7);
+  PlayEffect(
+    VisibleTo:      AllPlayers(),
+    Type:           PlayEffect.TracerRecallReappearEffect,
+    Color:          <Color>TeamOf(),
+    Position:       deathlocatorPosition + Up(),
+    Radius:         2
+  );
+  PlayEffect(
+    VisibleTo:      AllPlayers(),
+    Type:           PlayEffect.TracerRecallReappearSound,
+    Color:          <Color>TeamOf(),
+    Position:       deathlocatorPosition + Up(),
+    Radius:         200
+  );
+  Wait(0.1);
+  SetFacing(EventPlayer(), deathlocatorFacing);
+  Teleport(EventPlayer(), deathlocatorPosition);
+  Wait(1);
+  SetInvisible(EventPlayer(), InvisibleTo.None);
+  deathlocatorPosition = null;
+  DestroyEffect(deathlocatorEffect);
+  StopCamera();
+  ClearStatus(EventPlayer(), Status.PhasedOut);
+}
