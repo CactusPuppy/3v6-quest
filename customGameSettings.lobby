@@ -6,14 +6,14 @@
     "Energy Explosion Effects": true,       // 4 points
     "Explosion Sounds": true                // 2 points
   },                                        // TOTAL: 12 points
-  "Mode Name": "SVB's Ladd­er MMO Challenge",
+  "Mode Name": "SVB's 3v6 Quest",
   "Description": "3 Powered-Up Content Creators vs. 6 Ladd­er players. Who will win?",
   "Lobby": {
     "Max Team 1 Players": 3 // 3 Player Slots removed = 12 points
   },
   "Modes": {
     "All": {
-      "Game Mode Start": "Manual"
+      "Game Mode Start": "Immediately"
     },
     "Assault": {
       "Competitive Rules": true
