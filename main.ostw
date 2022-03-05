@@ -125,6 +125,7 @@ rule: "Ensure these settings appear first in the Workshop Settings menu" -1
 
 import "playerSetup.ostw";
 
+Hero[] CrouchPowerupHeroes: [Hero.Sombra, Hero.Torbjorn];
 playervar Boolean powerupWasNotConsumed;
 rule: 'Interact to use Powerup'
 Event.OngoingPlayer
@@ -132,6 +133,10 @@ if (TeamOf(EventPlayer()) == PowerupTeam)
 if (IsButtonHeld(Button: Button.Interact))
 if (IsTrueForAny(powerupInventory, ArrayElement()))
 {
+  if (ArrayContains(CrouchPowerupHeroes, HeroOf()) && !IsButtonHeld(Button: Button.Crouch)) {
+    SmallMessage(EventPlayer(), <"<0> must press [<1> + <2>] to use item", HeroIconString(HeroOf()), InputBindingString(Button.Crouch), InputBindingString(Button.Interact)>);
+    return;
+  }
   CheckUse();
   if (!canActivatePowerupFlag) {
     SmallMessage(EventPlayer(), <"<0> can't be used right now!", powerupData[powerupIndex][PowerupDataKey.Name]>);
@@ -141,6 +146,17 @@ if (IsTrueForAny(powerupInventory, ArrayElement()))
   }
   # Debounce
   Wait(0.5);
+}
+
+rule: "Avoid unintentional double action on heroes with interact abilities"
+Event.OngoingPlayer
+if (ArrayContains(CrouchPowerupHeroes, HeroOf()))
+if (IsButtonHeld(Button: Button.Crouch))
+if (!inventoryIsEmpty)
+{
+  DisallowButton(EventPlayer(), Button.Interact);
+  WaitUntil(!IsButtonHeld(Button: Button.Crouch), 9999);
+  AllowButton(EventPlayer(), Button.Interact);
 }
 
 void CheckUse() "[SUB] Can player use the currently selected powerup?"
