@@ -244,6 +244,7 @@ if (IsButtonHeld(Button: Button.PrimaryFire) || IsButtonHeld(Button: Button.Seco
 
 rule: "Disable selection buttons"
 Event.OngoingPlayer
+if (TeamOf(EventPlayer()) == PowerupTeam)
 if (IsButtonHeld(Button: Button.Reload))
 {
   DisallowButton(Button: Button.PrimaryFire);
