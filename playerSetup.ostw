@@ -9,7 +9,7 @@ if (TeamOf() == PowerupTeam)
     WorkshopSettingInteger("Starter Inventory", "Shrinking Tablets",      0, 0, 20),
     WorkshopSettingInteger("Starter Inventory", "Giant Juice Vials",      0, 0, 20),
     WorkshopSettingInteger("Starter Inventory", "Mass Root Vine Charges", 0, 0, 20),
-    WorkshopSettingInteger("Starter Inventory", "Deathlocators",          20, 0, 20),
+    WorkshopSettingInteger("Starter Inventory", "Deathlocators",          0, 0, 20),
     WorkshopSettingInteger("Starter Inventory", "E.M.P. Batteries",       0, 0, 20),
     WorkshopSettingInteger("Starter Inventory", "Contest Bot Whistles",   0, 0, 20)
   ];
