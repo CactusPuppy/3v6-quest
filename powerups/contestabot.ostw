@@ -1,0 +1,27 @@
+import "../main.ostw";
+globalvar Player contestingBot = null;
+
+Vector activeObjectivePosition: CurrentGameMode() == GameMode.Escort || (CurrentGameMode() == GameMode.Hybrid && ObjectiveIndex())
+  ? PayloadPosition()
+  : ObjectivePosition(ObjectiveIndex());
+
+void useContestabot() "[SUB] Contest-a-bot effects (CALL ASYNC)"
+{
+  # Safety measure to avoid multiple bots
+  if (EntityExists(contestingBot)) {
+    powerupWasNotConsumed = true;
+    return;
+  }
+  contestingBot = CreateDummyBot(Hero.WreckingBall, PowerupTeam, SlotOf() + NumberOfPlayers(TeamOf()), ObjectivePosition(ObjectiveIndex()), null);
+  StartForcingPlayerPosition(contestingBot, activeObjectivePosition + Up(), true);
+  StartScalingPlayer(contestingBot, 0.05, false);
+  SetInvisible(contestingBot, InvisibleTo.All);
+  SetStatus(contestingBot, null, Status.PhasedOut, 1000000);
+  StartForcingDummyBotName(contestingBot, "Contest-Chan");
+  SmallMessage(AllPlayers(), <"<0> is now contesting/progressing the objective!", PowerupTeam>);
+  DisableMovementCollisionWithEnvironment(contestingBot, false);
+  Wait(WorkshopSettingInteger("Contestabot", "Contest Duration", 15, 1, 60, 0));
+  DestroyDummyBot(TeamOf(contestingBot), SlotOf(contestingBot));
+  contestingBot = null;
+  SmallMessage(AllPlayers(), <"<0> is no longer contesting/progressing the objective", PowerupTeam>);
+}

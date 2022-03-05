@@ -161,6 +161,10 @@ void CheckUse() "[SUB] Can player use the currently selected powerup?"
       break;
     case PowerupType.DEATHLOCATOR:
       canActivatePowerupFlag = IsAlive() && AltitudeOf() < 1;
+      break;
+    case PowerupType.CONTEST_BOT:
+      canActivatePowerupFlag = IsAlive() && !contestingBot;
+      break;
   }
 }
 
@@ -180,6 +184,9 @@ void UseCurrentPower() "[SUB] Dispatcher for powerup use event"
       break;
     case PowerupType.DEATHLOCATOR:
       useDeathlocator();
+      break;
+    case PowerupType.CONTEST_BOT:
+      async! useContestabot();
       break;
   }
   # Break early if we didn't use the powerup
@@ -287,6 +294,7 @@ void incrementPowerupIndex() "[SUB] Find next valid powerupIndex in the positive
 // import "powerups/selfRes.ostw";
 // import "powerups/damageBoost.ostw";
 // import "powerups/speedBoost.ostw";
+import "powerups/contestabot.ostw";
 import "powerups/deathlocator.ostw";
 import "powerups/giant.ostw";
 import "powerups/invisibility.ostw";
