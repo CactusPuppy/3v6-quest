@@ -139,21 +139,21 @@ if (IsTrueForAny(powerupInventory, ArrayElement()))
   } else {
     UseCurrentPower();
   }
-    # Debounce
-  Wait(0.25);
+  # Debounce
+  Wait(0.5);
 }
 
 void CheckUse() "[SUB] Can player use the currently selected powerup?"
 {
+  # Can't use before game starts
+  AbortIf(!IsGameInProgress());
   # Check current powerup, and cancel if empty
-  if (powerupInventory[powerupIndex] == 0) {
-    return;
-  }
+  AbortIf(powerupInventory[powerupIndex] == 0);
   # Cannot use by default
   canActivatePowerupFlag = false;
   switch(powerupIndex) {
     case PowerupType.INVISIBILITY:
-      canActivatePowerupFlag = IsAlive(EventPlayer()) && invisibilityTimer == 0;
+      canActivatePowerupFlag = IsAlive() && invisibilityTimer == 0;
       break;
     case PowerupType.SHRINKING:
     case PowerupType.ENLARGENING:
