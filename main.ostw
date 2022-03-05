@@ -184,6 +184,9 @@ void CheckUse() "[SUB] Can player use the currently selected powerup?"
     case PowerupType.EMP:
       canActivatePowerupFlag = IsAlive();
       break;
+    case PowerupType.MASS_ROOT:
+      canActivatePowerupFlag = IsAlive();
+      break;
   }
 }
 
@@ -209,6 +212,9 @@ void UseCurrentPower() "[SUB] Dispatcher for powerup use event"
       break;
     case PowerupType.EMP:
       useEMP();
+      break;
+    case PowerupType.MASS_ROOT:
+      useMassRoot();
       break;
   }
   # Break early if we didn't use the powerup
@@ -321,6 +327,7 @@ import "powerups/deathlocator.ostw";
 import "powerups/emp.ostw";
 import "powerups/giant.ostw";
 import "powerups/invisibility.ostw";
+import "powerups/massRoot.ostw";
 import "powerups/shrinking.ostw";
 // import "powerups/cooldownHaste.ostw";
 // import "powerups/smokeBomb.ostw";

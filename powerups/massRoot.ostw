@@ -1,0 +1,105 @@
+import "../main.ostw";
+playervar Number rootTimer;
+playervar Player[] capturedPlayers;
+playervar Any[] rootEffects;
+playervar Number rootIndex;
+void useMassRoot() "[SUB] Mass root effects"
+{
+  capturedPlayers = PlayersWithinRadius(
+    PositionOf() + Up(),
+    WorkshopSettingInteger("Tree Roots", "Tree Root Range", 12, 1, 50, 0),
+    OppositeTeamOf(TeamOf()),
+    RadiusLOS.Surfaces
+  );
+  rootTimer = 0;
+  ChaseVariableOverTime(rootTimer, 2, 0.3, TimeChaseReevaluation.None);
+  for (rootIndex = 0; CountOf(capturedPlayers); 1) {
+    CreateBeamEffect(
+      AllPlayers(),
+      BeamType.BadBeam,
+      PositionOf() + Up() + Max(1, rootTimer) * DirectionTowards(PositionOf() + Up(), PositionOf(capturedPlayers[EvaluateOnce(rootIndex)])),
+      PositionOf() + Up() + Min(0, rootTimer - 1) * DirectionTowards(PositionOf() + Up(), PositionOf(capturedPlayers[EvaluateOnce(rootIndex)])),
+      <Color>TeamOf(),
+      EffectRev.VisibleToPositionAndRadius
+    );
+    ModifyVariable(rootEffects, Operation.AppendToArray, LastCreatedEntity());
+  }
+  PlayEffect(AllPlayers(), PlayEffect.OrisaHaltImplosionSound, <Color>TeamOf(), PositionOf(), 200);
+  Wait(0.15);
+  SetStatus(capturedPlayers, EventPlayer(), Status.Rooted, 9999);
+  capturedPlayers.rootTimer = WorkshopSettingInteger("Tree Roots", "Tree Root Duration", 6, 1, 30, 1);
+  ChaseVariableAtRate(capturedPlayers.rootTimer, 0, 1, RateChaseReevaluation.None);
+  Wait(0.15);
+  while (rootEffects != []) {
+    DestroyEffect(FirstOf(rootEffects));
+    ModifyVariable(rootEffects, Operation.RemoveFromArrayByIndex, 0);
+  }
+}
+
+rule: "[MASS ROOT] Root victim helper"
+Event.OngoingPlayer
+if (TeamOf() != PowerupTeam)
+if (rootTimer > 0)
+{
+  CreateEffect(
+    EventPlayer(),
+    Effect.SigmaGraviticFluxTargetSound,
+    null,
+    PositionOf(EventPlayer()),
+    150,
+    EffectRev.PositionAndRadius
+  );
+  ModifyVariable(rootEffects, Operation.AppendToArray, LastCreatedEntity());
+  CreateEffect(
+    AllPlayers(),
+    Effect.SigmaGraviticFluxTargetEffect,
+    <Color>OppositeTeamOf(TeamOf()),
+    EventPlayer(),
+    1,
+    EffectRev.PositionAndRadius
+  );
+  ModifyVariable(rootEffects, Operation.AppendToArray, LastCreatedEntity());
+  CreateBeamEffect(
+    AllPlayers(),
+    BeamType.BadBeam,
+    PositionOf() + Vector(0, 0, 0.5),
+    PositionOf() + Vector(0, 3, 0.5),
+    <Color>OppositeTeamOf(TeamOf()),
+    EffectRev.PositionAndRadius
+  );
+  ModifyVariable(rootEffects, Operation.AppendToArray, LastCreatedEntity());
+  CreateBeamEffect(
+    AllPlayers(),
+    BeamType.BadBeam,
+    PositionOf() + Vector(0, 0, -0.5),
+    PositionOf() + Vector(0, 3, -0.5),
+    <Color>OppositeTeamOf(TeamOf()),
+    EffectRev.PositionAndRadius
+  );
+  ModifyVariable(rootEffects, Operation.AppendToArray, LastCreatedEntity());
+  CreateBeamEffect(
+    AllPlayers(),
+    BeamType.BadBeam,
+    PositionOf() + Vector(0.5, 0, 0),
+    PositionOf() + Vector(0.5, 3, 0),
+    <Color>OppositeTeamOf(TeamOf()),
+    EffectRev.PositionAndRadius
+  );
+  ModifyVariable(rootEffects, Operation.AppendToArray, LastCreatedEntity());
+  CreateBeamEffect(
+    AllPlayers(),
+    BeamType.BadBeam,
+    PositionOf() + Vector(-0.5, 0, 0),
+    PositionOf() + Vector(-0.5, 3, 0),
+    <Color>OppositeTeamOf(TeamOf()),
+    EffectRev.PositionAndRadius
+  );
+  ModifyVariable(rootEffects, Operation.AppendToArray, LastCreatedEntity());
+
+  WaitUntil(rootTimer == 0, 9999);
+  while (rootEffects != []) {
+    DestroyEffect(FirstOf(rootEffects));
+    ModifyVariable(rootEffects, Operation.RemoveFromArrayByIndex, 0);
+  }
+  ClearStatus(EventPlayer(), Status.Rooted);
+}
