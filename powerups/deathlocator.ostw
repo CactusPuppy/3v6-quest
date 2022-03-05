@@ -2,13 +2,13 @@ import "../main.ostw";
 playervar Vector deathlocatorPosition = null;
 playervar Vector deathlocatorFacing = null;
 playervar Number cameraWaitTime;
-playervar Any deathlocatorEffect;
+playervar Any[] deathlocatorEffects = [];
 
 void useDeathlocator() "[SUB] Deathlocator effects (BLOCKS)"
 {
   if (deathlocatorPosition != null) {
     SmallMessage(EventPlayer(), <"You already have a deathlocator active!">);
-    SmallMessage(EventPlayer(), <"Press again to confirm you want to place a new deathlocator.">);
+    SmallMessage(EventPlayer(), <"[<0>] Replace existing deathlocator", InputBindingString(Button.Interact)>);
     WaitUntil(!IsButtonHeld(Button: Button.Interact), 9999);
     WaitUntil(
       IsButtonHeld(Button: Button.Interact)
@@ -18,7 +18,7 @@ void useDeathlocator() "[SUB] Deathlocator effects (BLOCKS)"
       powerupWasNotConsumed = true;
       return;
     }
-    if (EntityExists(deathlocatorEffect)) DestroyEffect(deathlocatorEffect);
+    if (deathlocatorEffects != []) CleanupDeathlocatorEffects();
     PlayEffect(AllPlayers(), PlayEffect.BadExplosion, Color.Yellow, deathlocatorPosition, 0.5);
   }
   deathlocatorPosition = PositionOf();
@@ -37,13 +37,22 @@ void useDeathlocator() "[SUB] Deathlocator effects (BLOCKS)"
     Position:       deathlocatorPosition,
     Radius:         200
   );
-  deathlocatorEffect = CreateEffect(
+  CreateEffect(
     VisibleTo:      AllPlayers(),
     Type:           Effect.Sphere,
     Color:          Color.Yellow,
     Position:       deathlocatorPosition,
     Radius:         0.1
   );
+  ModifyVariable(deathlocatorEffects, Operation.AppendToArray, LastCreatedEntity());
+  CreateEffect(
+    VisibleTo:      AllPlayers(),
+    Type:           Effect.Sparkles,
+    Color:          <Color>TeamOf(),
+    Position:       deathlocatorPosition,
+    Radius:         0.1
+  );
+  ModifyVariable(deathlocatorEffects, Operation.AppendToArray, LastCreatedEntity());
 }
 
 rule: "[DEATHLOCATOR] On death, activate deathlocator if able"
@@ -71,8 +80,11 @@ if (deathlocatorPosition != null)
   Resurrect();
   SetStatus(EventPlayer(), null, Status.PhasedOut, 10);
   SetInvisible(EventPlayer(), InvisibleTo.All);
-  Wait(0.1);
   StartCamera(EventPlayer(), EyePosition(), EyePosition() + FacingDirectionOf(), 7);
+  Wait(0.1);
+  SetFacing(EventPlayer(), deathlocatorFacing);
+  Teleport(EventPlayer(), deathlocatorPosition);
+  Wait(0.5);
   PlayEffect(
     VisibleTo:      AllPlayers(),
     Type:           PlayEffect.TracerRecallReappearEffect,
@@ -87,13 +99,39 @@ if (deathlocatorPosition != null)
     Position:       deathlocatorPosition + Up(),
     Radius:         200
   );
-  Wait(0.1);
-  SetFacing(EventPlayer(), deathlocatorFacing);
-  Teleport(EventPlayer(), deathlocatorPosition);
-  Wait(1);
+  Wait(0.5);
+  PlayEffect(
+    VisibleTo:      AllPlayers(),
+    Type:           PlayEffect.GoodPickupEffect,
+    Color:          <Color>TeamOf(),
+    Position:       deathlocatorPosition + Up(),
+    Radius:         2
+  );
+  PlayEffect(
+    VisibleTo:      AllPlayers(),
+    Type:           PlayEffect.BuffExplosionSound,
+    Color:          <Color>TeamOf(),
+    Position:       deathlocatorPosition + Up(),
+    Radius:         200
+  );
+  PlayEffect(
+    VisibleTo:      AllPlayers(),
+    Type:           PlayEffect.RingExplosionSound,
+    Color:          <Color>TeamOf(),
+    Position:       deathlocatorPosition + Up(),
+    Radius:         200
+  );
   SetInvisible(EventPlayer(), InvisibleTo.None);
   deathlocatorPosition = null;
-  DestroyEffect(deathlocatorEffect);
+  CleanupDeathlocatorEffects();
   StopCamera();
   ClearStatus(EventPlayer(), Status.PhasedOut);
+}
+
+void CleanupDeathlocatorEffects() "[SUB] Cleanup deathlocator effects"
+{
+  while (deathlocatorEffects != []) {
+    DestroyEffect(FirstOf(deathlocatorEffects));
+    ModifyVariable(deathlocatorEffects, Operation.RemoveFromArrayByIndex, 0);
+  }
 }
