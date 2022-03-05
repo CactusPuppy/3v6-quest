@@ -46,6 +46,9 @@ if (shrinkTimer > 0)
 {
   WaitUntil(shrinkTimer == 0, 1000000);
 
+  if (EntityExists(transformEffect)) {
+    DestroyEffect(transformEffect);
+  }
   StopChasingVariable(shrinkTimer);
   ChaseVariableOverTime(shrinkScale, 1, 0.5, TimeChaseReevaluation.None);
   ChaseVariableOverTime(shrinkPitch, 1, 0.5, TimeChaseReevaluation.None);
