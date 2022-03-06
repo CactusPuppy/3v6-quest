@@ -118,6 +118,8 @@ playervar Number[] talentBaseStats = [
   100     // Damage Receieved
 ];
 
+import "credits.ostw";
+
 rule: "Ensure these settings appear first in the Workshop Settings menu" -1
 {
   PowerupTeam = [Team.Team1, Team.Team2][WorkshopSettingCombo("Settings", "Powerups Team", 0, ["Team 1", "Team 2"], 0)];

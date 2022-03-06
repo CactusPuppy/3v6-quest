@@ -1,0 +1,8 @@
+import "main.ostw";
+globalvar Any _;
+rule: "Credits settings" -2
+{
+  _ = WorkshopSettingCombo("3v6 Quest", "Version", 0, ["1.0"], 0);
+  _ = WorkshopSettingCombo("Credits", "Produced by", 0, ["SVB"], 0);
+  _ = WorkshopSettingCombo("Credits", "Developed by", 0, ["CactusPuppy"], 0);
+}
