@@ -35,63 +35,63 @@ enum TalentType {
   ULTIMATE_GENERATION, // 4
   DAMAGE_RECEIVED // 5
 }
-Number numOfPowerups: talentData.Length;
-globalvar TalentData[] talentData = [
-  {
-    Name: "Move Speed",
-    // Price: WorkshopSettingInteger("Talent Prices", "Move Speed Price", 10, 0, 100, 100),
-    Price: 0,
-    Color: CustomColor(132, 204, 101, 255),
-    Description: "+<X>% to base movement speed",
-    BonusAmount: WorkshopSettingInteger("Move Speed Talent", "Move Speed % Bonus", 20, 0, 100, 0),
-    MaxStacks: WorkshopSettingInteger("Move Speed Talent", "Move Speed Max Stacks", 5, 1, 10, 1),
-  },
-  {
-    Name: "Max Health",
-    // Price: WorkshopSettingInteger("Talent Prices", "Max Health Price", 10, 0, 100, 101),
-    Price: 0,
-    Color: CustomColor(230, 81,  81,  255),
-    Description: "+<X>% to base max health",
-    BonusAmount: WorkshopSettingInteger("Max Health Talent", "Max Health % Bonus", 20, 0, 100, 0),
-    MaxStacks: WorkshopSettingInteger("Max Health Talent", "Max Health Max Stacks", 5, 1, 10, 1),
-  },
-  {
-    Name: "Damage Dealt",
-    // Price: WorkshopSettingInteger("Talent Prices", "Damage Dealt Price", 10, 0, 100, 101),
-    Price: 0,
-    Color: CustomColor(169, 255, 252, 255),
-    Description: "+<X>% to base damage",
-    BonusAmount: WorkshopSettingInteger("Damage Dealt Talent", "Damage Dealt % Bonus", 20, 0, 100, 0),
-    MaxStacks: WorkshopSettingInteger("Damage Dealt Talent", "Damage Dealt Max Stacks", 5, 1, 10, 1),
-  },
-  {
-    Name: "Cooldown Speed",
-    // Price: WorkshopSettingInteger("Talent Prices", "Cooldown Speed Price", 10, 0, 100, 101),
-    Price: 0,
-    Color: CustomColor(239, 241, 93, 255),
-    Description: "+<X>% faster cooldowns",
-    BonusAmount: WorkshopSettingInteger("Cooldown Speed Talent", "Cooldown Speed % Bonus", 10, 0, 100, 0),
-    MaxStacks: WorkshopSettingInteger("Cooldown Speed Talent", "Cooldown Speed Max Stacks", 5, 1, 10, 1),
-  },
-  {
-    Name: "Ultimate Generation",
-    // Price: WorkshopSettingInteger("Talent Prices", "Ultimate Generation Price", 10, 0, 100, 101),
-    Price: 0,
-    Color: CustomColor(255, 196, 40,  255),
-    Description: "+<X>% faster ultimate generation",
-    BonusAmount: WorkshopSettingInteger("Ultimate Generation Talent", "Ultimate Generation % Bonus", 10, 0, 100, 0),
-    MaxStacks: WorkshopSettingInteger("Ultimate Generation Talent", "Ultimate Generation Max Stacks", 5, 1, 10, 1),
-  },
-  {
-    Name: "Damage Received",
-    // Price: WorkshopSettingInteger("Talent Prices", "Damage Received Price", 10, 0, 100, 101),
-    Price: 0,
-    Color: CustomColor(252, 175, 203, 255),
-    Description: "+<X>% less damage taken",
-    BonusAmount: WorkshopSettingInteger("Damage Received Talent", "Damage Received % Bonus", 10, 0, 100, 0),
-    MaxStacks: WorkshopSettingInteger("Damage Received Talent", "Damage Received Max Stacks", 5, 1, 10, 1),
-  }
-];
+// Number numOfPowerups: talentData.Length;
+// globalvar TalentData[] talentData = [
+//   {
+//     Name: "Move Speed",
+//     // Price: WorkshopSettingInteger("Talent Prices", "Move Speed Price", 10, 0, 100, 100),
+//     Price: 0,
+//     Color: CustomColor(132, 204, 101, 255),
+//     Description: "+<X>% to base movement speed",
+//     BonusAmount: WorkshopSettingInteger("Move Speed Talent", "Move Speed % Bonus", 20, 0, 100, 0),
+//     MaxStacks: WorkshopSettingInteger("Move Speed Talent", "Move Speed Max Stacks", 5, 1, 10, 1),
+//   },
+//   {
+//     Name: "Max Health",
+//     // Price: WorkshopSettingInteger("Talent Prices", "Max Health Price", 10, 0, 100, 101),
+//     Price: 0,
+//     Color: CustomColor(230, 81,  81,  255),
+//     Description: "+<X>% to base max health",
+//     BonusAmount: WorkshopSettingInteger("Max Health Talent", "Max Health % Bonus", 20, 0, 100, 0),
+//     MaxStacks: WorkshopSettingInteger("Max Health Talent", "Max Health Max Stacks", 5, 1, 10, 1),
+//   },
+//   {
+//     Name: "Damage Dealt",
+//     // Price: WorkshopSettingInteger("Talent Prices", "Damage Dealt Price", 10, 0, 100, 101),
+//     Price: 0,
+//     Color: CustomColor(169, 255, 252, 255),
+//     Description: "+<X>% to base damage",
+//     BonusAmount: WorkshopSettingInteger("Damage Dealt Talent", "Damage Dealt % Bonus", 20, 0, 100, 0),
+//     MaxStacks: WorkshopSettingInteger("Damage Dealt Talent", "Damage Dealt Max Stacks", 5, 1, 10, 1),
+//   },
+//   {
+//     Name: "Cooldown Speed",
+//     // Price: WorkshopSettingInteger("Talent Prices", "Cooldown Speed Price", 10, 0, 100, 101),
+//     Price: 0,
+//     Color: CustomColor(239, 241, 93, 255),
+//     Description: "+<X>% faster cooldowns",
+//     BonusAmount: WorkshopSettingInteger("Cooldown Speed Talent", "Cooldown Speed % Bonus", 10, 0, 100, 0),
+//     MaxStacks: WorkshopSettingInteger("Cooldown Speed Talent", "Cooldown Speed Max Stacks", 5, 1, 10, 1),
+//   },
+//   {
+//     Name: "Ultimate Generation",
+//     // Price: WorkshopSettingInteger("Talent Prices", "Ultimate Generation Price", 10, 0, 100, 101),
+//     Price: 0,
+//     Color: CustomColor(255, 196, 40,  255),
+//     Description: "+<X>% faster ultimate generation",
+//     BonusAmount: WorkshopSettingInteger("Ultimate Generation Talent", "Ultimate Generation % Bonus", 10, 0, 100, 0),
+//     MaxStacks: WorkshopSettingInteger("Ultimate Generation Talent", "Ultimate Generation Max Stacks", 5, 1, 10, 1),
+//   },
+//   {
+//     Name: "Damage Received",
+//     // Price: WorkshopSettingInteger("Talent Prices", "Damage Received Price", 10, 0, 100, 101),
+//     Price: 0,
+//     Color: CustomColor(252, 175, 203, 255),
+//     Description: "+<X>% less damage taken",
+//     BonusAmount: WorkshopSettingInteger("Damage Received Talent", "Damage Received % Bonus", 10, 0, 100, 0),
+//     MaxStacks: WorkshopSettingInteger("Damage Received Talent", "Damage Received Max Stacks", 5, 1, 10, 1),
+//   }
+// ];
 struct TalentData {
   public String Name;
   public Number Price;
