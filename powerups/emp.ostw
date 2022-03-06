@@ -28,6 +28,6 @@ void useEMP() "[SUB] EMP effects"
     PlayersWithinRadius(EyePosition(), 15, OppositeTeamOf(TeamOf()), RadiusLOS.Surfaces),
     EventPlayer(),
     Status.Hacked,
-    5
+    WorkshopSettingReal("EMP Powerup", "EMP Hack Duration", 5, 1, 30)
   );
 }
