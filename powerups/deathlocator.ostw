@@ -128,6 +128,15 @@ if (deathlocatorPosition != null)
   ClearStatus(EventPlayer(), Status.PhasedOut);
 }
 
+rule: "[DEATHLOCATOR] Reset between rounds"
+Event.OngoingPlayer
+if (IsBetweenRounds())
+if (deathlocatorPosition != null)
+{
+  CleanupDeathlocatorEffects();
+  deathlocatorPosition = null;
+}
+
 void CleanupDeathlocatorEffects() "[SUB] Cleanup deathlocator effects"
 {
   while (deathlocatorEffects != []) {
