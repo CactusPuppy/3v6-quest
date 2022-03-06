@@ -19,7 +19,7 @@ void useGiant() "[SUB] Giant Juice effects"
 
   PlayEffect(AllPlayers(), PlayEffect.BrigitteRepairPackImpactEffect, <Color>TeamOf(EventPlayer()), EventPlayer(), 2);
   PlayEffect(AllPlayers(), PlayEffect.ZaryaParticleCannonExplosionEffect, <Color>TeamOf(EventPlayer()), PositionOf(EventPlayer()), giantScaleTarget);
-  PlayEffect(AllPlayers(), PlayEffect.OrisaHaltImplosionSound, null, PositionOf(EventPlayer()), 200);
+  PlayEffect(AllPlayers(), PlayEffect.SymmetraTeleporterReappearSound, null, PositionOf(EventPlayer()), 200);
   CreateEffect(AllPlayers(), Effect.WinstonPrimalRageEffect, <Color>TeamOf(EventPlayer()), EventPlayer(), 1, EffectRev.VisibleTo);
   ModifyVariable(giantEffects, Operation.AppendToArray, LastCreatedEntity());
   CreateEffect(AllPlayers(), Effect.WinstonPrimalRageSound, <Color>TeamOf(EventPlayer()), EventPlayer(), 150, EffectRev.VisibleTo);
