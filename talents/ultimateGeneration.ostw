@@ -2,6 +2,22 @@ import "../main.ostw";
 // globalvar Number[] UltimateCosts = [2100, 1260, 1820, 1680, 2142, 1540, 2100, 1540, 1540, 2310, 1680, 2310, 1932, 1800, 1680, 1925, 2100, 2310, 2940, 1540, 1610, 1400, 1680, 2100, 1680, 2800, 2380, 1540, 2240, 1960, 2310, 1960];
 
 playervar Number cachedUltPercent;
+rule: "[ULT GEN] Set ultimate generation"
+Event.OngoingPlayer
+if (TeamOf() == PowerupTeam)
+{
+  switch (SlotOf()) {
+    case 0:
+      talentBaseStats[TalentType.ULTIMATE_GENERATION] = WorkshopSettingInteger("Player 1 Talents", "Player 1 Ultimate Generation Rate %", 100, 100, 1000);
+      break;
+    case 1:
+      talentBaseStats[TalentType.ULTIMATE_GENERATION] = WorkshopSettingInteger("Player 2 Talents", "Player 2 Ultimate Generation Rate %", 100, 100, 1000);
+      break;
+    case 2:
+      talentBaseStats[TalentType.ULTIMATE_GENERATION] = WorkshopSettingInteger("Player 3 Talents", "Player 3 Ultimate Generation Rate %", 100, 100, 1000);
+      break;
+  }
+}
 
 rule: "On ult charge percent rollover, subtly bump ult charge"
 Event.OngoingPlayer
@@ -9,6 +25,10 @@ if (TeamOf() == PowerupTeam)
 if (talentBaseStats[TalentType.ULTIMATE_GENERATION] > 100)
 if (cachedUltPercent != UltimateChargePercent())
 {
+  if (UltimateChargePercent() == 0) {
+    cachedUltPercent = 0;
+    return;
+  }
   SetUltimateCharge(EventPlayer(), AbsoluteValue(
     UltimateChargePercent()
     + (talentBaseStats[TalentType.ULTIMATE_GENERATION] / 100 - 1) * (UltimateChargePercent() - cachedUltPercent)

@@ -19,13 +19,13 @@ if (TeamOf() == PowerupTeam)
 {
   switch (SlotOf()) {
     case 0:
-      talentBaseStats[TalentType.COOLDOWN] = WorkshopSettingInteger("Player 1 Talents", "Player 1 Cooldown Rate %", 100, 100, 1000);
+      talentBaseStats[TalentType.COOLDOWN] = WorkshopSettingInteger("Player 1 Talents", "Player 1 Cooldown Rate %", 100, 100, 500);
       break;
     case 1:
-      talentBaseStats[TalentType.COOLDOWN] = WorkshopSettingInteger("Player 2 Talents", "Player 2 Cooldown Rate %", 100, 100, 1000);
+      talentBaseStats[TalentType.COOLDOWN] = WorkshopSettingInteger("Player 2 Talents", "Player 2 Cooldown Rate %", 100, 100, 500);
       break;
     case 2:
-      talentBaseStats[TalentType.COOLDOWN] = WorkshopSettingInteger("Player 3 Talents", "Player 3 Cooldown Rate %", 100, 100, 1000);
+      talentBaseStats[TalentType.COOLDOWN] = WorkshopSettingInteger("Player 3 Talents", "Player 3 Cooldown Rate %", 100, 100, 500);
       break;
   }
 }
