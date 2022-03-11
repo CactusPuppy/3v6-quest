@@ -8,11 +8,14 @@ Vector activeObjectivePosition: CurrentGameMode() == GameMode.Escort || (Current
 void useContestabot() "[SUB] Contest-a-bot effects (CALL ASYNC)"
 {
   # Safety measure to avoid multiple bots
+  # Note under normal circumstances this will not fire in time for the main hook to refund the powerup, but that's okay.
+  #
+  # We're just trying to make sure if this is called synchronously by accident, the right thing happens.
   if (EntityExists(contestingBot)) {
     powerupWasNotConsumed = true;
     return;
   }
-  contestingBot = CreateDummyBot(Hero.WreckingBall, PowerupTeam, SlotOf() + NumberOfPlayers(TeamOf()), ObjectivePosition(ObjectiveIndex()), null);
+  contestingBot = CreateDummyBot(HeroOf(), PowerupTeam, SlotOf() + NumberOfPlayers(TeamOf()), ObjectivePosition(ObjectiveIndex()), null);
   StartForcingPlayerPosition(contestingBot, activeObjectivePosition + Up(), true);
   StartScalingPlayer(contestingBot, 0.05, false);
   SetInvisible(contestingBot, InvisibleTo.All);

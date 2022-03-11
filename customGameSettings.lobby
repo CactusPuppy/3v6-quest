@@ -13,7 +13,8 @@
   },
   "Modes": {
     "All": {
-      "Game Mode Start": "Immediately"
+      "Game Mode Start": "Immediately",
+      "Skins": false
     },
     "Assault": {
       "Competitive Rules": true
