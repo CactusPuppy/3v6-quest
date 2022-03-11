@@ -19,6 +19,9 @@ void useShrink() "[SUB] Shrinking Tablet effects"
   PlayEffect(AllPlayers(), PlayEffect.MoiraFadeDisappearEffect, <Color>TeamOf(EventPlayer()), EventPlayer(), 1.2);
   PlayEffect(AllPlayers(), PlayEffect.MoiraFadeDisappearSound, null, EventPlayer(), 200);
   shrinkTimer = shrinkDuration;
+  if (EntityExists(transformEffect)) {
+    DestroyEffect(transformEffect);
+  }
   transformEffect = CreateEffect(AllPlayers(), Effect.EchoCloningEffect, <Color>TeamOf(EventPlayer()), EventPlayer(), 1, EffectRev.VisibleTo);
 
   Wait(0.5);

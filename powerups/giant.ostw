@@ -24,6 +24,9 @@ void useGiant() "[SUB] Giant Juice effects"
   ModifyVariable(giantEffects, Operation.AppendToArray, LastCreatedEntity());
   CreateEffect(AllPlayers(), Effect.WinstonPrimalRageSound, <Color>TeamOf(EventPlayer()), EventPlayer(), 150, EffectRev.VisibleTo);
   ModifyVariable(giantEffects, Operation.AppendToArray, LastCreatedEntity());
+  if (EntityExists(transformEffect)) {
+    DestroyEffect(transformEffect);
+  }
   transformEffect = CreateEffect(AllPlayers(), Effect.EchoCloningEffect, <Color>TeamOf(EventPlayer()), EventPlayer(), 1, EffectRev.VisibleTo);
 
   giantTimer = giantDuration;
