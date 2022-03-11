@@ -1,0 +1,11 @@
+import "../main.ostw";
+globalvar Number respawnSecondsAdded = WorkshopSettingInteger("Respawn Global Powerup", "Additional Seconds in Respawn", 0, 0, 20);
+
+rule: "[RESPAWN TIME] Slow enemy respawn time"
+Event.OnDeath
+if (TeamOf() != PowerupTeam)
+{
+  DisableRespawning(EventPlayer());
+  Wait(respawnSecondsAdded);
+  EnableRespawning(EventPlayer());
+}
