@@ -1,6 +1,0 @@
-rule: "Damage self"
-Event.OngoingPlayer
-if (IsCommunicating(EventPlayer(), Communication.Hello))
-{
-  Damage(EventPlayer(), null, 120);
-}
