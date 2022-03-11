@@ -10,22 +10,48 @@ enum PowerupType {
   CONTEST_BOT // 6
 }
 // ABILITY NAME                                                                        ITEM COLOR                            ITEM DESCRIPTION
-globalvar Any[][] powerupData = [
-  [<"<0> Invisibility Dust", IconString(Icon.Eye)>,                                    CustomColor( 47, 181, 234, 255),   "The ground-up dust of Sombra's old cloaking devices. Tastes like grapes.\nTemporarily renders the user invisible to enemies. Dissipates upon taking or dealing damage." ],
-  [<"<0> Shrinking Tablet", AbilityIconString(Hero.WreckingBall, Button.Crouch)>,      CustomColor(170, 120, 230, 255),   "This hard-light tablet looks suspiciously stone-like.\nTemporarily decreases the user's size." ],
-  [<"<0> Giant Juice", AbilityIconString(Hero.Baptiste, Button.Crouch)>,               CustomColor(159,  43,  43, 255),   "Winston extracted some of his blood to give to you. Don't think too much about it.\nTemporarily increases the user's size and health." ],
-  [<"<0> Tree Roots", IconString(Icon.Dizzy)>,                                         CustomColor( 79, 193,  49, 255),   "Moira's vines grow surprisingly quickly.\nTemporarily restrains all enemies within a certain distance of the user." ],
-  [<"<0> Deathlocator", IconString(Icon.Skull)>,                                       CustomColor(235, 224,  47, 255),   "Heroes never die... for a price. Deathlocators starting at $499.\nOnce placed, will instantly respawn its owner at its location upon death."],
-  [<"<0> E.M.P.", AbilityIconString(Hero.Sombra, Button.Ultimate)>,                    CustomColor(161,  73, 197, 255),   "Sombra let you borrow her EMP device. Don't lose it!\nTemporarily hacks all enemies within a certain distance of the user."],
-  [<"<0> Contestabot", AbilityIconString(Hero.Ashe, Button.Ultimate)>,                 CustomColor(127, 127, 127, 255),   "Where does B.O.B. go when he's not deployed anyways?\nContests or progresses the objective for a period of time."]
+globalvar PowerupData[] powerupData = [
+{
+    Name: <"<0> Invisibility Dust", IconString(Icon.Eye)>,
+    Color: CustomColor( 47, 181, 234, 255),
+    Description: "The ground-up dust of Sombra's old cloaking devices. Tastes like grapes.\nTemporarily renders the user invisible to enemies. Dissipates upon taking or dealing damage."
+  },
+  {
+    Name: <"<0> Shrinking Tablet", AbilityIconString(Hero.WreckingBall, Button.Crouch)>,
+    Color: CustomColor(170, 120, 230, 255),
+    Description: "This hard-light tablet looks suspiciously stone-like.\nTemporarily decreases the user's size."
+  },
+  {
+    Name: <"<0> Giant Juice", AbilityIconString(Hero.Baptiste, Button.Crouch)>,
+    Color: CustomColor(159,  43,  43, 255),
+    Description: "Winston extracted some of his blood to give to you. Don't think too much about it.\nTemporarily increases the user's size and health."
+  },
+  {
+    Name: <"<0> Tree Roots", IconString(Icon.Dizzy)>,
+    Color: CustomColor( 79, 193,  49, 255),
+    Description: "Moira's vines grow surprisingly quickly.\nTemporarily restrains all enemies within a certain distance of the user."
+  },
+  {
+    Name: <"<0> Deathlocator", IconString(Icon.Skull)>,
+    Color: CustomColor(235, 224,  47, 255),
+    Description: "Heroes never die... for a price. Deathlocators starting at $499.\nOnce placed, will instantly respawn its owner at its location upon death."
+  },
+  {
+    Name: <"<0> E.M.P.", AbilityIconString(Hero.Sombra, Button.Ultimate)>,
+    Color: CustomColor(161,  73, 197, 255),
+    Description: "Sombra let you borrow her EMP device. Don't lose it!\nTemporarily hacks all enemies within a certain distance of the user."
+  },
+  {
+    Name: <"<0> Contestabot", AbilityIconString(Hero.Ashe, Button.Ultimate)>,
+    Color: CustomColor(127, 127, 127, 255),
+    Description: "Where does B.O.B. go when he's not deployed anyways?\nContests or progresses the objective for a period of time."
+  }
 ];
-enum PowerupDataKey {
-  Name,
-  Color,
-  Description
-}
+
 struct PowerupData {
-  // TODO: Refactor
+  public String Name;
+  public Color Color;
+  public String Description;
 }
 enum TalentType {
   MOVE_SPEED, // 0
@@ -141,7 +167,7 @@ if (IsTrueForAny(powerupInventory, ArrayElement()))
   }
   CheckUse();
   if (!canActivatePowerupFlag) {
-    SmallMessage(EventPlayer(), <"<0> can't be used right now!", powerupData[powerupIndex][PowerupDataKey.Name]>);
+    SmallMessage(EventPlayer(), <"<0> can't be used right now!", powerupData[powerupIndex].Name>);
     PlayEffect(EventPlayer(), PlayEffect.DebuffImpactSound, null, EventPlayer(), 50);
   } else {
     UseCurrentPower();
@@ -224,7 +250,7 @@ void UseCurrentPower() "[SUB] Dispatcher for powerup use event"
   # Decrement inventory of powerups
   powerupInventory[powerupIndex] -= 1;
   # Confirm use (cache name to avoid deferment issues)
-  lastPowerupName = powerupData[powerupIndex][PowerupDataKey.Name];
+  lastPowerupName = powerupData[powerupIndex].Name;
   SmallMessage(EventPlayer(), <"Used <0>", lastPowerupName>);
   # Select next available option if out now
   if (powerupInventory[powerupIndex] == 0) {
@@ -245,7 +271,7 @@ if (TeamOf(EventPlayer()) == PowerupTeam)
     Header:             inventoryIsEmpty
                         ? "   No Items   "
                         : <" < [<1> + <2>]       <0> [<4>]       [<1> + <3>] > ",
-                            powerupData[powerupIndex][PowerupDataKey.Name],
+                            powerupData[powerupIndex].Name,
                             InputBindingString(Button.Reload),
                             InputBindingString(Button.PrimaryFire),
                             InputBindingString(Button.SecondaryFire),
@@ -255,8 +281,8 @@ if (TeamOf(EventPlayer()) == PowerupTeam)
     Text:               " ",
     Location:           Location.Top,
     SortOrder:          3,
-    HeaderColor:        inventoryIsEmpty ? Color.Red : powerupData[powerupIndex][PowerupDataKey.Color],
-    Reevaluation:       HudTextRev.VisibleToAndString,
+    HeaderColor:        inventoryIsEmpty ? Color.Red : powerupData[powerupIndex].Color,
+    Reevaluation:       HudTextRev.VisibleToSortOrderStringAndColor,
     Spectators:         Spectators.DefaultVisibility
   );
   if (IsTrueForAll(powerupInventory, ArrayElement() == 0)) {
@@ -302,7 +328,7 @@ void decrementPowerupIndex() "[SUB] Find next valid powerupIndex in the negative
   while (powerupInventory[explorePowerupIndex] == 0 && explorePowerupIndex != powerupIndex) {
     explorePowerupIndex -= 1;
     if (explorePowerupIndex < 0) {
-      explorePowerupIndex = CountOf(powerupData) - 1;
+      explorePowerupIndex = powerupData.Length - 1;
     }
   }
   powerupIndex = explorePowerupIndex;
@@ -312,7 +338,7 @@ void incrementPowerupIndex() "[SUB] Find next valid powerupIndex in the positive
   explorePowerupIndex = powerupIndex + 1;
   while (powerupInventory[explorePowerupIndex] == 0 && explorePowerupIndex != powerupIndex) {
     explorePowerupIndex += 1;
-    if (explorePowerupIndex >= CountOf(powerupData)) {
+    if (explorePowerupIndex >= powerupData.Length) {
       explorePowerupIndex = 0;
     }
   }
