@@ -1,0 +1,8 @@
+import "../main.ostw";
+rule: "[COMMS TALENT] Disable comms if needed"
+Event.OnPlayerJoin
+if (TeamOf() != PowerupTeam)
+if (WorkshopSettingToggle("Comms Mute", "Mute Comms for opposing team", false))
+{
+  DisableVoiceChat(EventPlayer(), true, true, true);
+}
